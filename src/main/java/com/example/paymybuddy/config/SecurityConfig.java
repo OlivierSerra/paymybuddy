@@ -2,6 +2,7 @@ package com.example.paymybuddy.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 //import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,11 +20,13 @@ public class SecurityConfig {
                 // config accès URL
                 .authorizeHttpRequests(auth -> auth
                         // nécessité d'une authentification pour les URL commençant par users
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/transactions/**").authenticated()
                         // pour les autres (home) tout est permis
                         .anyRequest().permitAll())
                 // activation de l'authentification via le formulaire de connexion
-                .httpBasic();
+                .httpBasic(withDefaults());
 
         return http.build();
         // renvoie un objet SecurityFilterChain permettant la connexion

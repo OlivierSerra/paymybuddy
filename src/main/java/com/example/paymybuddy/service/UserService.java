@@ -6,6 +6,7 @@ import com.example.paymybuddy.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class UserService {
 
 	// permet le transfert d'argent en créant une transaction ( nécessité de la
 	// retravailler)
-	public boolean transferMoney(int fromUserId, int toUserId, double amount) {
+	public boolean transferMoney(int fromUserId, int toUserId, BigDecimal amount) {
 		Optional<User> fromUserOpt = repo.findById(fromUserId);
 		Optional<User> toUserOpt = repo.findById(toUserId);
 
@@ -36,9 +37,9 @@ public class UserService {
 			// utilisateur qui reçoit
 			User to = toUserOpt.get();
 			// on regarde si le from a assez d'argent
-			if (from.getBalance() >= amount) {
-				from.setBalance(from.getBalance() - amount);
-				to.setBalance(to.getBalance() + amount);
+			if (from.getBalance().compareTo(amount) >= 0) {
+				from.setBalance(from.getBalance().subtract(amount));
+				to.setBalance(to.getBalance().add(amount));
 				// on enregistre l'utilisateur from et to
 				repo.save(from);
 				repo.save(to);

@@ -1,7 +1,10 @@
 package com.example.paymybuddy.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 
+//Je dois encore intégrer connections au USER 
 @Entity
 @Table(name = "user") // ou "users", selon ton schéma
 public class User {
@@ -20,7 +23,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private double balance;
+    private BigDecimal balance;
 
     @Column(nullable = false)
     private String role;
@@ -29,7 +32,7 @@ public class User {
     }
 
     // Constructeur de User
-    public User(int id, String username, String email, String password, double balance) {
+    public User(int id, String username, String email, String password, BigDecimal balance) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -70,11 +73,11 @@ public class User {
         this.password = password;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

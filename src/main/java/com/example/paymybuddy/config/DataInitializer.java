@@ -2,6 +2,9 @@ package com.example.paymybuddy.config;
 
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.repository.UserRepository;
+
+import java.math.BigDecimal;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +22,7 @@ public class DataInitializer {
                 admin.setEmail("admin@gmail.com");
                 admin.setPassword(encoder.encode("admin4321"));
                 admin.setRole("ADMIN");
-                admin.setBalance(0.0);
+                admin.setBalance(new BigDecimal("100"));
                 userRepository.save(admin);
                 System.out.println("admin créé");
 
