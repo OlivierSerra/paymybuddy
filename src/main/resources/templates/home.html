@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+    <h1>Bienvenue sur PayMyBuddy</h1>
+    <p th:text="'Bonjour, ' + ${username} + ' !'"></p>
+</body>
+</html>

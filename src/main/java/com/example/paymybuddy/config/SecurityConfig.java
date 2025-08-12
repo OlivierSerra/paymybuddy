@@ -12,25 +12,50 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
     // configuration du bean par rapport à la sécurité
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // désactivation de protections pour le dvpt à suppr en prod
-                .csrf(csrf -> csrf.disable())
-                // config accès URL
                 .authorizeHttpRequests(auth -> auth
-                        // nécessité d'une authentification pour les URL commençant par users
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/users/**").authenticated()
-                        .requestMatchers("/transactions/**").authenticated()
-                        // pour les autres (home) tout est permis
-                        .anyRequest().permitAll())
-                // activation de l'authentification via le formulaire de connexion
-                .httpBasic(withDefaults());
+                        .requestMatchers("/login", "/style.css", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/users/**", "/api/**").hasRole("ADMIN")
+                        .anyRequest().authenticated() // ← y compris "/": requiert login
+                )
+                .formLogin(form -> form
+                        // commente cette ligne si tu veux la page de login par défaut :
+                        .loginPage("/home")
+                        .defaultSuccessUrl("/users/view", true) // destination après login
+                        .permitAll())
 
+                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
         return http.build();
-        // renvoie un objet SecurityFilterChain permettant la connexion
     }
+
+    /*
+     * @Bean
+     * public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+     * http
+     * // désactivation de protections pour le dvpt à suppr en prod
+     * .csrf(csrf -> csrf.disable())
+     * // config accès URL
+     * .authorizeHttpRequests(auth -> auth
+     * // nécessité d'une authentification pour les URL commençant par users
+     * .requestMatchers(HttpMethod.POST, "/users").permitAll()
+     * .requestMatchers("/users/view", "/users").permitAll()
+     * .requestMatchers("/users/**").authenticated()
+     * .requestMatchers("/transactions/**").authenticated()
+     * // pour les autres (home) tout est permis
+     * .anyRequest().permitAll())
+     * // activation de l'authentification via le formulaire de connexion
+     * .httpBasic(withDefaults());
+     * 
+     * return http.build();
+     * // renvoie un objet SecurityFilterChain permettant la connexion
+     * }
+     *
+     * 
+     * ------------------------------------------------------------
+     */
 
     // autoriser tout le monde _dvlpt
     /*
