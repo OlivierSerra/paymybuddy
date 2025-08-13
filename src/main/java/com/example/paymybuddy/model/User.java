@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 //Je dois encore intégrer connections au USER 
 @Entity
-@Table(name = "user") // ou "users", selon ton schéma
+@Table(name = "users") // ou "users", selon ton schéma
 public class User {
 
     @Id

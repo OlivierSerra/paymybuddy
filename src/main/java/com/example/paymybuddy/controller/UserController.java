@@ -3,6 +3,7 @@ package com.example.paymybuddy.controller;
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 //import jakarta.persistence.*;
 
-@RestController
+@Controller
 @RequestMapping("/users")
 public class UserController {
 
@@ -18,15 +19,10 @@ public class UserController {
     private UserService userService;
 
     // créer un nouvel user
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
-    }
-
-    // lire tous les user
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    @PostMapping("")
+    public String create(@ModelAttribute User user) {
+        userService.saveUser(user);
+        return "redirect:/Users";
     }
 
     // lire un user avec un id
@@ -37,14 +33,16 @@ public class UserController {
 
     // modifier un utilisateur
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
-        return userService.updateUser(id, updatedUser);
+    public String update(@PathVariable Integer id, @ModelAttribute User form) {
+        userService.updateUser(id, form);
+        return "redirect:/Users";
     }
 
     // supprimer un utilisateur
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id) {
+    public String delete(@PathVariable Integer id) {
         userService.deleteUser(id);
+        return "redirect:/Users";
     }
 
 }

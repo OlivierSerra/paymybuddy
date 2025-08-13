@@ -17,72 +17,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/style.css", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/users/**", "/api/**").hasRole("ADMIN")
+                        .requestMatchers("/", "/login", "/favicon.ico").permitAll()
+                        .requestMatchers("/style.css", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/contacts/**", "/transactions/**").authenticated()
+                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated() // ← y compris "/": requiert login
                 )
                 .formLogin(form -> form
                         // commente cette ligne si tu veux la page de login par défaut :
-                        .loginPage("/home")
-                        .defaultSuccessUrl("/users/view", true) // destination après login
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/Users", true) // <- envoie toujours l’admin ici
+                        .failureUrl("/login?error")
                         .permitAll())
 
-                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout"));
         return http.build();
     }
-
-    /*
-     * @Bean
-     * public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-     * http
-     * // désactivation de protections pour le dvpt à suppr en prod
-     * .csrf(csrf -> csrf.disable())
-     * // config accès URL
-     * .authorizeHttpRequests(auth -> auth
-     * // nécessité d'une authentification pour les URL commençant par users
-     * .requestMatchers(HttpMethod.POST, "/users").permitAll()
-     * .requestMatchers("/users/view", "/users").permitAll()
-     * .requestMatchers("/users/**").authenticated()
-     * .requestMatchers("/transactions/**").authenticated()
-     * // pour les autres (home) tout est permis
-     * .anyRequest().permitAll())
-     * // activation de l'authentification via le formulaire de connexion
-     * .httpBasic(withDefaults());
-     * 
-     * return http.build();
-     * // renvoie un objet SecurityFilterChain permettant la connexion
-     * }
-     *
-     * 
-     * ------------------------------------------------------------
-     */
-
-    // autoriser tout le monde _dvlpt
-    /*
-     * http
-     * .csrf(csrf -> csrf.disable())
-     * .authorizeHttpRequests(auth -> auth
-     * .requestMatchers(HttpMethod.POST, "/users").permitAll() // autorise les POST
-     * sur /users sans login
-     * .requestMatchers("/users/**").authenticated()
-     * .anyRequest().permitAll())
-     * .httpBasic();
-     */
-
-    // pour autoriser uniquement un utilisateur
-    /*
-     * http
-     * // désactivation de protections pour le dvpt à suppr en prod
-     * .csrf(csrf -> csrf.disable())
-     * // config accès URL
-     * .authorizeHttpRequests(auth -> auth
-     * // nécessité d'une authentification pour les URL commençant par users
-     * .requestMatchers("/users/**").authenticated()
-     * // pour les autres (home) tout est permis
-     * .anyRequest().permitAll())
-     * // activation de l'authentification via le formulaire de connexion
-     * .httpBasic();
-     */
 
     // permet de créer la variable qui va recevoir l'encodage du password de
     // l'utilisateur.
