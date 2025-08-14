@@ -10,4 +10,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     List<Transaction> findByUserSender(User userSender);
 
     List<Transaction> findByUserReceiver(User userReceiver);
+
+    List<Transaction> findAllByOrderByTimestampDesc();
 }

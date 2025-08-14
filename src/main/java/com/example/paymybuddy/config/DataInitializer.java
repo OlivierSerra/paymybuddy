@@ -27,6 +27,17 @@ public class DataInitializer {
                 System.out.println("admin créé");
 
             }
+            if (userRepository.findByUsername("aline").isEmpty()) {
+                User user = new User();
+                user.setUsername("aline");
+                user.setEmail("aline@gmail.com");
+                user.setPassword(encoder.encode("root1"));
+                user.setRole("USER");
+                user.setBalance(new BigDecimal("100"));
+                userRepository.save(user);
+                System.out.println("aline créé");
+
+            }
         };
     }
 }

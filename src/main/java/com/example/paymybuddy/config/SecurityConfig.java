@@ -16,29 +16,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/favicon.ico").permitAll()
-                        .requestMatchers("/style.css", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/ListeUsers").permitAll()
-                        .requestMatchers("/ListeTransactions").permitAll()
-                        .requestMatchers("/MyUsers").permitAll()
-                        // .requestMatchers("/ListeUsers/**").hasRole("ADMIN")
-                        // .requestMatchers("/ListeUsers/**").hasAuthority("ADMIN")
-                        // .requestMatchers("/contacts/**", "/transactions/**").authenticated()
-                        // .requestMatchers("/MyUsers/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated() // ← y compris "/": requiert login
-                )
-                .formLogin(form -> form
-                        // commente cette ligne si tu veux la page de login par défaut :
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/ListeUsers", true) // <- envoie toujours l’admin ici
-                        .failureUrl("/login?error")
-                        .permitAll())
-
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout"));
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // tout est public
+                .formLogin(form -> form.disable()) // pas d’écran de login
+                .httpBasic(basic -> basic.disable()); // pas de basic auth
         return http.build();
     }
 
@@ -48,4 +29,33 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    /*
+     * .authorizeHttpRequests(auth -> auth
+     * .requestMatchers("/", "/login", "/favicon.ico").permitAll()
+     * .requestMatchers("/style.css", "/css/**", "/js/**", "/images/**",
+     * "/webjars/**").permitAll()
+     * .requestMatchers("/ListeUsers").permitAll()
+     * .requestMatchers("/ListeTransactions").permitAll()
+     * .requestMatchers("/MyUsers").permitAll()
+     * // .requestMatchers("/ListeUsers/**").hasRole("ADMIN")
+     * // .requestMatchers("/ListeUsers/**").hasAuthority("ADMIN")
+     * // .requestMatchers("/contacts/**", "/transactions/**").authenticated()
+     * // .requestMatchers("/MyUsers/**").hasAnyRole("USER", "ADMIN")
+     * .anyRequest().authenticated() // ← y compris "/": requiert login
+     * )
+     * .formLogin(form -> form
+     * // commente cette ligne si tu veux la page de login par défaut :
+     * .loginPage("/login")
+     * .loginProcessingUrl("/login")
+     * .defaultSuccessUrl("/ListeUsers", true) // <- envoie toujours l’admin ici
+     * .failureUrl("/login?error")
+     * .permitAll())
+     * 
+     * .logout(logout -> logout
+     * .logoutUrl("/logout")
+     * .logoutSuccessUrl("/login?logout"));
+     * return http.build();
+     * 
+     */
 }

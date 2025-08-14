@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Liste des utilisateurs</title>
+  <title>Mes Contacts</title>
   <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
@@ -11,13 +11,13 @@
 
 <table>
   <thead>
-    <tr>
-      <th>ID</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Rôle</th>
-      <th>Solde</th>
-    </tr>
+      <form th:action="@{/login}" method="post">
+        <label>Utilisateur</label>
+        <input type="text" name="username" required>
+        <label>Mot de passe</label>
+        <input type="password" name="password" required>
+        <button type="submit">Se connecter</button>
+      </form>
   </thead>
   <tbody>
     <tr th:each="u : ${MyUsers}">
