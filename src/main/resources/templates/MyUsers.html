@@ -6,7 +6,7 @@
   <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
-<h1>Liste des utilisateurs</h1>
+<h1>Mes Contacts</h1>
 <h1>Admin</h1>
 
 <table>
@@ -20,7 +20,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr th:each="u : ${users}">
+    <tr th:each="u : ${MyUsers}">
       <td th:text="${u.id}">1</td>
       <td th:text="${u.username}">alice</td>
       <td th:text="${u.email}">alice@mail.com</td>

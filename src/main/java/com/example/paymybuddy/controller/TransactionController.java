@@ -44,7 +44,7 @@ public class TransactionController {
     }
 
     // afficher l'ensemble des transactions d'un utilisateur
-    @GetMapping("")
+    @GetMapping("/sent")
     public List<Transaction> getTransactions(Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));

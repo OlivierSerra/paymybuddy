@@ -13,17 +13,28 @@ import java.util.Optional;
 //import jakarta.persistence.*;
 
 @Controller
-@RequestMapping("/ListeUsers")
-public class UserGetAllUsersController {
+@RequestMapping("/admin/users")
+public class UserAdminController {
 
     @Autowired
     private UserService userService;
 
     // lire tous les user
-    @GetMapping("")
-    public String listeUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers()); // plus tard: filtrer par user connecté
-        return "ListeUsers"; // templates/ListeUsers.html
+    /*
+     * @GetMapping("/ListeUsers")
+     * public String listeUsers(Model model) {
+     * model.addAttribute("users", userService.getAllUsers()); // plus tard: filtrer
+     * par user connecté
+     * return "ListeUsers"; // templates/ListeUsers.html
+     * }
+     * 
+     * 
+     */
+
+    // lire tous les user
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
 }

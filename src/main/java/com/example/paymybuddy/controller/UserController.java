@@ -22,7 +22,7 @@ public class UserController {
     @PostMapping("")
     public String create(@ModelAttribute User user) {
         userService.saveUser(user);
-        return "redirect:/Users";
+        return "redirect:/MyUsers";
     }
 
     // lire un user avec un id
@@ -35,14 +35,14 @@ public class UserController {
     @PutMapping("/{id}")
     public String update(@PathVariable Integer id, @ModelAttribute User form) {
         userService.updateUser(id, form);
-        return "redirect:/Users";
+        return "redirect:/MyUsers";
     }
 
     // supprimer un utilisateur
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Integer id) {
         userService.deleteUser(id);
-        return "redirect:/Users";
+        return "redirect:/MyUsers";
     }
 
 }

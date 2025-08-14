@@ -7,15 +7,15 @@ import org.springframework.ui.Model;
 
 @Controller
 
-public class ContactViewController {
+public class UserAdminViewController {
 
     private final UserRepository userRepository;
 
-    public ContactViewController(UserRepository userRepository) {
+    public UserAdminViewController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/contacts")
+    @GetMapping("/ListeUsers")
     public String listeUsers(Model model) {
         model.addAttribute("users", userRepository.findAll());
         return "ListeUsers";

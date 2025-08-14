@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import jakarta.persistence.Entity;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.example.paymybuddy.repository")
-@EntityScan(basePackages = "com.example.paymybuddy.model")
+// @EnableJpaRepositories(basePackages = "com.example.paymybuddy.repository")
+// @EntityScan(basePackages = "com.example.paymybuddy.model")
 public class PayMyBuddyApplication {
 
     public static void main(String[] args) {

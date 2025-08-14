@@ -17,7 +17,7 @@ public class TransactionsListViewController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("")
+    @GetMapping("/MesTransactions")
     public String listUsers(Model model) {
         model.addAttribute("users", userRepository.findAll());
         return "ListeTransactions";

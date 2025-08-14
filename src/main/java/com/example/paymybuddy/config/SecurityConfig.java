@@ -19,17 +19,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/favicon.ico").permitAll()
                         .requestMatchers("/style.css", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers("/users/**").hasAuthority("ADMIN")
-                        .requestMatchers("/contacts/**", "/transactions/**").authenticated()
-                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/ListeUsers").permitAll()
+                        .requestMatchers("/ListeTransactions").permitAll()
+                        .requestMatchers("/MyUsers").permitAll()
+                        // .requestMatchers("/ListeUsers/**").hasRole("ADMIN")
+                        // .requestMatchers("/ListeUsers/**").hasAuthority("ADMIN")
+                        // .requestMatchers("/contacts/**", "/transactions/**").authenticated()
+                        // .requestMatchers("/MyUsers/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated() // ← y compris "/": requiert login
                 )
                 .formLogin(form -> form
                         // commente cette ligne si tu veux la page de login par défaut :
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/Users", true) // <- envoie toujours l’admin ici
+                        .defaultSuccessUrl("/ListeUsers", true) // <- envoie toujours l’admin ici
                         .failureUrl("/login?error")
                         .permitAll())
 
