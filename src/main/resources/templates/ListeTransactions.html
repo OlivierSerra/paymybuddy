@@ -1,38 +1,38 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Transactions</title>
-  <link rel="stylesheet" th:href="@{/style.css}">
-</head>
-<body>
-<h1>Transactions</h1>
+  <!DOCTYPE html>
+  <html xmlns:th="http://www.thymeleaf.org" lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Transactions</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+  </head>
+  <body>
+  <h1>Transactions</h1>
 
-<p th:if="${success}" th:text="${success}" style="color:#0a7a0a;"></p>
-<p th:if="${error}" th:text="${error}" style="color:#b00020;"></p>
+  <p th:if="${success}" th:text="${success}" style="color:#0a7a0a;"></p>
+  <p th:if="${error}" th:text="${error}" style="color:#b00020;"></p>
 
-<table>
-  <thead>
-  <tr>
-    <th>Date</th>
-    <th>Émetteur</th>
-    <th>Bénéficiaire</th>
-    <th>Montant</th>
-    <th>Libellé</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="t : ${transactions}">
-    <td th:text="${#temporals.format(t.timestamp, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</td>
-    <td th:text="${t.sender.username}">alice</td>
-    <td th:text="${t.receiver.username}">bob</td>
-    <td th:text="${t.amount}">10.00</td>
-    <td th:text="${t.description}">déj</td>
-  </tr>
-  </tbody>
-</table>
+  <table>
+    <thead>
+    <tr>
+      <th>Date</th>
+      <th>Émetteur</th>
+      <th>Bénéficiaire</th>
+      <th>Montant</th>
+      <th>Libellé</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="t : ${transactions}">
+      <td th:text="${#temporals.format(t.timestamp, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</td>
+      <td th:text="${t.userSender.username}">alice</td>
+      <td th:text="${t.userReceiver.username}">bob</td>
+      <td th:text="${t.amount}">10.00</td>
+      <td th:text="${t.description}">déj</td>
+    </tr>
+    </tbody>
+  </table>
 
-<p><a th:href="@{/transactions/new}">Nouveau virement</a></p>
-<p><a th:href="@{/}">Accueil</a></p>
-</body>
+  <p><a th:href="@{/transactions/new}">Nouveau virement</a></p>
+  <p><a th:href="@{/}">Accueil</a></p>
+  </body>
 </html>

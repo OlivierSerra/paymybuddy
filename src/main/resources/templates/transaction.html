@@ -12,38 +12,34 @@
 <p th:if="${error}" th:text="${error}" style="color:red;"></p>
 <p th:if="${success}" th:text="${success}" style="color:green;"></p>
 
-<form th:action="@{/transactions}" th:object="${transaction}" method="post">
-  <!-- TEMPORAIRE tant que pas de sécurité -->
-  <div>
-    <label for="senderUsername">Votre identifiant (émetteur)</label>
-    <input id="senderUsername" name="senderUsername" type="text" required />
-  </div>
+<form th:action="@{/transactions}" method="post" th:object="${transaction}">
+  <!-- TEMP tant qu’il n’y a pas de sécurité -->
+  <input type="text" name="senderUsername" placeholder="expéditeur (username)"/>
 
-  <div>
-    <label for="receiver">Bénéficiaire</label>
-    <select id="receiver" th:field="*{receiverUsername}" required>
-      <option value="" disabled selected>-- Choisir --</option>
-      <option th:each="u : ${receivers}" th:value="${u.username}"
-              th:text="${u.username + ' (' + u.email + ')'}"></option>
-    </select>
-    <div th:if="${#fields.hasErrors('receiverUsername')}" th:errors="*{receiverUsername}"></div>
-  </div>
+  <label>Destinataire</label>
+  <select th:field="*{receiverUsername}">
+    <option value="" disabled selected>-- choisir --</option>
+    <option th:each="u : ${receivers}"
+            th:value="${u.username}"
+            th:text="${u.username} + ' (' + ${u.email} + ')'"></option>
+  </select>
+  <div th:if="${#fields.hasErrors('receiverUsername')}" th:errors="*{receiverUsername}"></div>
 
-  <div>
-    <label for="amount">Montant</label>
-    <input id="amount" th:field="*{amount}" type="number" step="0.01" min="0.01" required />
-    <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
-  </div>
+  <label>Montant</label>
+  <input type="number" step="0.01" th:field="*{amount}"/>
+  <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
 
-  <div>
-    <label for="description">Description</label>
-    <input id="description" th:field="*{description}" type="text" />
-  </div>
+  <label>Message</label>
+  <input type="text" th:field="*{description}"/>
 
   <button type="submit">Envoyer</button>
+
+  <p th:if="${success}" th:text="${success}"></p>
+  <p th:if="${error}" th:text="${error}"></p>
 </form>
 
-<p><a th:href="@{/transactions/list}">Voir l’historique</a></p>
+
+<p><a th:href="@{/transactions/ListeTransactions}">Voir l’historique</a></p>
 <p><a th:href="@{/}">Accueil</a></p>
 </body>
 </html>

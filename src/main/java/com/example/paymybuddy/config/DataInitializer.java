@@ -38,6 +38,17 @@ public class DataInitializer {
                 System.out.println("aline créé");
 
             }
+            if (userRepository.findByUsername("alain").isEmpty()) {
+                User user = new User();
+                user.setUsername("alain");
+                user.setEmail("alain@gmail.com");
+                user.setPassword(encoder.encode("root2"));
+                user.setRole("USER");
+                user.setBalance(new BigDecimal("100"));
+                userRepository.save(user);
+                System.out.println("alain créé");
+
+            }
         };
     }
 }

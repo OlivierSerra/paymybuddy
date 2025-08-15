@@ -1,6 +1,8 @@
 package com.example.paymybuddy.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 
@@ -88,6 +90,21 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    // les connexions
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_buddies", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "buddy_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "user_id", "buddy_id" }))
+    private Set<User> buddies = new HashSet<>();
+
+    public Set<User> getBuddies() {
+        return buddies;
+    }
+
+    public void setBuddies(Set<User> buddies) {
+        this.buddies = buddies;
     }
 
 }

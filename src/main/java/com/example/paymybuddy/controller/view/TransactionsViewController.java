@@ -47,7 +47,10 @@ public class TransactionsViewController {
 
     @GetMapping("/new")
     public String newTransaction(Model model) {
-        model.addAttribute("transaction", new TransactionRequest());
+        // model.addAttribute("transaction", new TransactionRequest());
+        if (!model.containsAttribute("transaction")) {
+            model.addAttribute("transaction", new TransactionRequest());
+        }
         model.addAttribute("receivers", userRepository.findAll());
         return "transaction";
     }
@@ -70,21 +73,25 @@ public class TransactionsViewController {
                     form.getAmount(),
                     form.getDescription());
             ra.addFlashAttribute("success", "Virement effectué !");
-            return "redirect:/transactions/list";
+            return "redirect:transactions/ListeTransactions";
         } catch (RuntimeException ex) {
             ra.addFlashAttribute("error", ex.getMessage());
             ra.addFlashAttribute("transaction", form);
             return "redirect:/transactions/new";
         }
     }
-    /*
-     * @GetMapping("/ListeTransactions")
-     * public String listTransaction(Model model) {
-     * List<Transaction> all =
-     * transactionRepository.findAllByOrderByTimestampDesc();
-     * model.addAttribute("transaction", all);
-     * return "ListeTransactions";
-     * }
+
+    @GetMapping("/ListeTransactions")
+    public String listTransaction(Model model) {
+        model.addAttribute("transactions",
+                transactionRepository.findAllByOrderByTimestampDesc());
+        return "ListeTransactions";
+    }
+    /**
+     * fonctionnement=> TransactionRequest.receiverUsername ->service fait
+     * findByUsername(...)
+     * -> remplit transaction.userReceiver / transaction.userSender
+     * -> sauvegarde → liste affiche t.userSender.username & t.userReceiver.username
      * 
      */
 

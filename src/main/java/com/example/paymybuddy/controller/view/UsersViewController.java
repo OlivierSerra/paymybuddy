@@ -17,7 +17,7 @@ public class UsersViewController {
     @GetMapping("/users")
     public String Users(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "MyUsers";
+        return "myUsers";
     }
 
 }
