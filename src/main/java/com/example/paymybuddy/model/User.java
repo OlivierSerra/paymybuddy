@@ -95,8 +95,11 @@ public class User {
     // les connexions
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_buddies", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "buddy_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-            "user_id", "buddy_id" }))
+    @JoinTable(name = "user_buddies", joinColumns = @JoinColumn(name = "user_id"), // clé étrangères utilisateur
+                                                                                   // propriétaire
+            inverseJoinColumns = @JoinColumn(name = "buddy_id"), // clé étrangères vers le buddy //pour la contrainte
+                                                                 // d'unicité.
+            uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "buddy_id" }))
     private Set<User> buddies = new HashSet<>();
 
     public Set<User> getBuddies() {

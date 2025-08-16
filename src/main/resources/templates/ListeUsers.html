@@ -25,11 +25,15 @@
       <td th:text="${u.email}">alice@mail.com</td>
       <td th:text="${u.role}">USER</td>
       <td th:text="${u.balance}">100.00</td>
+      <td>
+        <a th:href="@{/buddies(owner=${u.username})}">
+        Buddies de <span th:text="${u.username}">user</span>
+    </a>
     </tr>
   </tbody>
 </table>
-
+<p><a th:href="@{/}">Ajouter un buddy</a></p>
 <p><a th:href="@{/transactions/new}">nouveau virement</a></p>
-<p><a th:href="@{//transactions/login}">Retour à l’accueil</a></p>
+<p><a th:href="@{/}">Retour à l’accueil</a></p>
 </body>
 </html>

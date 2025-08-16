@@ -51,6 +51,7 @@ public class TransactionsViewController {
         if (!model.containsAttribute("transaction")) {
             model.addAttribute("transaction", new TransactionRequest());
         }
+
         model.addAttribute("receivers", userRepository.findAll());
         return "transaction";
     }
