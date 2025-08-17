@@ -1,61 +1,55 @@
 package com.example.paymybuddy.config;
 
+import com.example.paymybuddy.repository.UserRepository;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-//import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-    // configuration du bean par rapport à la sécurité
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // tout est public
-                .formLogin(form -> form.disable()) // pas d’écran de login
-                .httpBasic(basic -> basic.disable()); // pas de basic auth
+                // .csrf(csrf -> csrf.disable()) // pour tes formulaires actuels sans token CSRF
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login", "/favicon.ico",
+                                "/style.css", "/css/**", "/js/**", "/images/**", "/webjars/**")
+                        .permitAll()
+                        .requestMatchers("/ListeUsers", "/ListeTransactions").permitAll()
+                        .requestMatchers("/buddies/**", "/transactions/**").authenticated()
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .defaultSuccessUrl("/ListeUsers", false)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout"));
+
         return http.build();
     }
 
-    // permet de créer la variable qui va recevoir l'encodage du password de
-    // l'utilisateur.
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return username -> userRepository.findByUsername(username)
+                .map(u -> org.springframework.security.core.userdetails.User
+                        .withUsername(u.getUsername())
+                        .password(u.getPassword()) // doit être BCrypt !
+                        .roles(u.getRole()) // ex: "USER" ou "ADMIN" (sans le prefix "ROLE_")
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
-
-    /*
-     * .authorizeHttpRequests(auth -> auth
-     * .requestMatchers("/", "/login", "/favicon.ico").permitAll()
-     * .requestMatchers("/style.css", "/css/**", "/js/**", "/images/**",
-     * "/webjars/**").permitAll()
-     * .requestMatchers("/ListeUsers").permitAll()
-     * .requestMatchers("/ListeTransactions").permitAll()
-     * .requestMatchers("/MyUsers").permitAll()
-     * // .requestMatchers("/ListeUsers/**").hasRole("ADMIN")
-     * // .requestMatchers("/ListeUsers/**").hasAuthority("ADMIN")
-     * // .requestMatchers("/contacts/**", "/transactions/**").authenticated()
-     * // .requestMatchers("/MyUsers/**").hasAnyRole("USER", "ADMIN")
-     * .anyRequest().authenticated() // ← y compris "/": requiert login
-     * )
-     * .formLogin(form -> form
-     * // commente cette ligne si tu veux la page de login par défaut :
-     * .loginPage("/login")
-     * .loginProcessingUrl("/login")
-     * .defaultSuccessUrl("/ListeUsers", true) // <- envoie toujours l’admin ici
-     * .failureUrl("/login?error")
-     * .permitAll())
-     * 
-     * .logout(logout -> logout
-     * .logoutUrl("/logout")
-     * .logoutSuccessUrl("/login?logout"));
-     * return http.build();
-     * 
-     */
 }

@@ -13,6 +13,7 @@
 <p th:if="${success}" th:text="${success}" style="color:green;"></p>
 
 <form th:action="@{/transactions}" method="post" th:object="${transaction}">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
   <!-- TEMP tant qu’il n’y a pas de sécurité -->
   <input type="text" name="senderUsername" placeholder="expéditeur (username)"/>
 

@@ -1,51 +1,55 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Mes buddies</title>
-  <link rel="stylesheet" th:href="@{/style.css}">
-</head>
-<body>
-<h1 th:text="'Buddies de ' + ${owner.username}">Buddies</h1>
+package com.example.paymybuddy.config;
 
-<p th:if="${success}" th:text="${success}" style="color:#0a7a0a;"></p>
-<p th:if="${error}" th:text="${error}" style="color:#b00020;"></p>
+import com.example.paymybuddy.repository.UserRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-<h2>Ajouter un buddy</h2>
-<form th:action="@{/buddies/add}" method="post">
-  <input type="hidden" name="owner" th:value="${owner.username}">
-  <select name="buddy" required>
-    <option value="" disabled selected>— choisir —</option>
-    <option th:each="u : ${candidates}" th:value="${u.username}" th:text="${u.username + ' (' + u.email + ')'}"></option>
-  </select>
-  <button type="submit">Ajouter</button>
-</form>
+@Configuration
+public class SecurityConfig {
 
-<h2>Mes buddies</h2>
-<table>
-  <thead>
-  <tr>
-    <th>Username</th>
-    <th>Email</th>
-    <th>Actions</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="b : ${buddies}">
-    <td th:text="${b.username}">bob</td>
-    <td th:text="${b.email}">bob@mail.com</td>
-    <td>
-      <form th:action="@{/buddies/remove}" method="post" style="display:inline">
-        <input type="hidden" name="owner" th:value="${owner.username}">
-        <input type="hidden" name="buddy" th:value="${b.username}">
-        <button type="submit">Retirer</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            // Laisse CSRF ACTIVÉ (valeur par défaut). Tes formulaires doivent inclure le token.
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/login", "/style.css", "/webjars/**", "/images/**").permitAll()
+                // le reste nécessite une authentification :
+                .requestMatchers("/transactions/**", "/buddies/**", "/ListeUsers", "/ListeTransactions").authenticated()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                // page de login par défaut de Spring Security (pas besoin de template)
+                .defaultSuccessUrl("/ListeUsers", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login?logout")
+            );
+        return http.build();
+    }
 
-<p><a th:href="@{'/transactions/new'(senderUsername=${owner.username})}">Faire un virement à un buddy</a></p>
-<p><a th:href="@{/}">Accueil</a></p>
-</body>
-</html>
+    @Bean
+    public UserDetailsService userDetailsService(UserRepository repo) {
+        return username -> repo.findByUsername(username)
+            .map(u -> {
+                // On accepte "ADMIN" / "USER" (on préfixe) ou déjà "ROLE_ADMIN" / "ROLE_USER"
+                String role = u.getRole();
+                String authority = role != null && role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                return User.withUsername(u.getUsername())
+                        .password(u.getPassword()) // doit être encodé BCrypt en base
+                        .authorities(new SimpleGrantedAuthority(authority))
+                        .build();
+            })
+            .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable: " + username));
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}

@@ -1,69 +1,101 @@
 package com.example.paymybuddy.service;
 
-import com.example.paymybuddy.repository.UserRepository;
 import com.example.paymybuddy.model.User;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.paymybuddy.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 @Service
 public class UserService {
-	@Autowired
-	// création d'une variable de type userRepository afin d'ajouter des
-	// comportements au système
-	private UserRepository repo;
 
-	// création d'une variable encodé de modèle BCryptPasswordEncoder qui encaissera
-	// le mot de passe qui sera encodé
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	private final UserRepository repo;
+	private final PasswordEncoder passwordEncoder;
 
-	// permet le transfert d'argent en créant une transaction ( nécessité de la
-	// retravailler)
-	public boolean transferMoney(int fromUserId, int toUserId, BigDecimal amount) {
-		Optional<User> fromUserOpt = repo.findById(fromUserId);
-		Optional<User> toUserOpt = repo.findById(toUserId);
-
-		// si on trouve celui qui verse et celui qui reçoit
-		if (fromUserOpt.isPresent() && toUserOpt.isPresent()) {
-			// utilisateur qui verse
-			User from = fromUserOpt.get();
-			// utilisateur qui reçoit
-			User to = toUserOpt.get();
-			// on regarde si le from a assez d'argent
-			if (from.getBalance().compareTo(amount) >= 0) {
-				from.setBalance(from.getBalance().subtract(amount));
-				to.setBalance(to.getBalance().add(amount));
-				// on enregistre l'utilisateur from et to
-				repo.save(from);
-				repo.save(to);
-				return true;
-			}
-
-		}
-
-		return false;
+	public UserService(PasswordEncoder passwordEncoder, UserRepository repo) {
+		this.passwordEncoder = passwordEncoder;
+		this.repo = repo;
 	}
 
-	// avoir la liste de tous les utilisateurs
+	@Transactional
+	public boolean transferMoney(int fromUserId, int toUserId, BigDecimal amount) {
+		if (amount == null || amount.signum() <= 0) {
+			throw new IllegalArgumentException("Le montant doit être > 0");
+		}
+		if (fromUserId == toUserId) {
+			throw new IllegalArgumentException("Impossible de se virer à soi-même");
+		}
+
+		User from = repo.findById(fromUserId).orElseThrow(() -> new IllegalArgumentException("Expéditeur introuvable"));
+		User to = repo.findById(toUserId).orElseThrow(() -> new IllegalArgumentException("Destinataire introuvable"));
+
+		if (from.getBalance().compareTo(amount) < 0) {
+			throw new IllegalArgumentException("Solde insuffisant");
+		}
+
+		from.setBalance(from.getBalance().subtract(amount));
+		to.setBalance(to.getBalance().add(amount));
+
+		// Avec @Transactional, les modifications seront flush/commit automatiquement.
+		// On peut malgré tout sauver explicitement :
+		repo.save(from);
+		repo.save(to);
+
+		return true;
+	}
+
 	public List<User> getAllUsers() {
 		return repo.findAll();
 	}
 
-	// avoir un seul utilisateur
 	public Optional<User> getUserById(Integer id) {
 		return repo.findById(id);
 	}
 
-	// créer un utilisateur
 	public User createUser(User user) {
+		if (user.getPassword() == null || user.getPassword().isBlank()) {
+			throw new IllegalArgumentException("Mot de passe requis");
+		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		if (user.getBalance() == null)
+			user.setBalance(BigDecimal.ZERO);
+		if (user.getRole() == null || user.getRole().isBlank())
+			user.setRole("USER");
+		return repo.save(user);
+	}
+
+	@Transactional
+	public User updateUser(Integer id, User updatedUser) {
+		return repo.findById(id)
+				.map(user -> {
+					if (updatedUser.getEmail() != null)
+						user.setEmail(updatedUser.getEmail());
+					if (updatedUser.getUsername() != null)
+						user.setUsername(updatedUser.getUsername());
+					if (updatedUser.getBalance() != null)
+						user.setBalance(updatedUser.getBalance());
+					if (updatedUser.getRole() != null)
+						user.setRole(updatedUser.getRole());
+
+					// Si un nouveau mot de passe (non vide) est fourni, on l’encode
+					if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+						user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+					}
+
+					return repo.save(user);
+				})
+				.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+	}
+
+	// Option : supprime cette méthode si elle n’est pas utilisée,
+	// ou garde-la en encodant aussi le mot de passe si nécessaire.
+	public User saveUser(User user) {
+		// Attention: si tu passes ici pour créer/maj un user,
+		// assure-toi d'encoder le password AVANT d'appeler saveUser.
 		return repo.save(user);
 	}
 
@@ -71,23 +103,4 @@ public class UserService {
 	public void deleteUser(Integer id) {
 		repo.deleteById(id);
 	}
-
-	// mise a jour d'un utilisateur
-	public User updateUser(Integer id, User updatedUser) {
-		return repo.findById(id)
-				.map(user -> {
-					user.setEmail(updatedUser.getEmail());
-					user.setUsername(updatedUser.getUsername());
-					user.setPassword(updatedUser.getPassword());
-					user.setBalance(updatedUser.getBalance());
-					return repo.save(user);
-				})
-				.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-	}
-
-	// sauvegarder un utilisateur
-	public User saveUser(User user) {
-		return repo.save(user);
-	}
-
 }
