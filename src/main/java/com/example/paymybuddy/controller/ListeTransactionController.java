@@ -19,7 +19,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/transactions/view")
-public class TransactionController {
+public class ListeTransactionController {
 
     @Autowired
     private TransactionService transactionService;

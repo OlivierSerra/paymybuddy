@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon tableau de bord</title>
+  <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<h1>ESPACE PERSONNEL</h1>
+
+<section>
+  <h2>Actions rapides</h2>
+  <ul>
+    <li><a th:href="@{/buddies}">Gérer mes buddies</a></li>
+    <li><a th:href="@{/transactions/new}">Nouveau virement</a></li>
+    <li><a th:href="@{/transactions/mine}">Voir toutes mes transactions</a></li>
+    <li><a th:href="@{/ListeUsers}">Annuaire des utilisateurs</a></li>
+    <li><a th:href="@{/ListeUsers}">Mon compte&solde</a></li>
+  </ul>
+</section>
+
+<p><a th:href="@{/logout}">Se déconnecter</a></p>
+</body>
+</html>

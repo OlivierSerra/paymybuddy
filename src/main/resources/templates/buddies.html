@@ -1,55 +1,64 @@
-package com.example.paymybuddy.config;
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes buddies</title>
+  <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
 
-import com.example.paymybuddy.repository.UserRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+<h1>Buddies de <span sec:authentication="name">me</span></h1>
 
-@Configuration
-public class SecurityConfig {
+<p th:if="${success}" th:text="${success}" style="color:#0a7a0a;"></p>
+<p th:if="${error}" th:text="${error}" style="color:#b00020;"></p>
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            // Laisse CSRF ACTIVÉ (valeur par défaut). Tes formulaires doivent inclure le token.
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/style.css", "/webjars/**", "/images/**").permitAll()
-                // le reste nécessite une authentification :
-                .requestMatchers("/transactions/**", "/buddies/**", "/ListeUsers", "/ListeTransactions").authenticated()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                // page de login par défaut de Spring Security (pas besoin de template)
-                .defaultSuccessUrl("/ListeUsers", true)
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-            );
-        return http.build();
-    }
+<h2>Ajouter un buddy</h2>
+<form th:action="@{/buddies/add}" method="post">
+  <!-- CSRF : tu peux laisser cette ligne OU la retirer (injection auto si th:action + POST) -->
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+  <select name="buddy" required>
+    <option value="" disabled selected>— choisir —</option>
+    <option th:each="u : ${candidates}"
+            th:value="${u.username}"
+            th:text="${u.username + ' (' + u.email + ')'}"></option>
+  </select>
+  <button type="submit">Ajouter</button>
+</form>
 
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository repo) {
-        return username -> repo.findByUsername(username)
-            .map(u -> {
-                // On accepte "ADMIN" / "USER" (on préfixe) ou déjà "ROLE_ADMIN" / "ROLE_USER"
-                String role = u.getRole();
-                String authority = role != null && role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                return User.withUsername(u.getUsername())
-                        .password(u.getPassword()) // doit être encodé BCrypt en base
-                        .authorities(new SimpleGrantedAuthority(authority))
-                        .build();
-            })
-            .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable: " + username));
-    }
+<h2>Mes buddies</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="b : ${buddies}">
+    <td th:text="${b.username}">bob</td>
+    <td th:text="${b.email}">bob@mail.com</td>
+    <td>
+      <form th:action="@{/buddies/remove}" method="post" style="display:inline">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="buddy" th:value="${b.username}">
+        <button type="submit">Retirer</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
+<!-- Lien simple, plus besoin de passer sender -->
+<p><a th:href="@{/transactions/new}">Faire un virement à un buddy</a></p>
+
+<!-- Exemples d’utilisation de sec:authorize -->
+<p sec:authorize="hasRole('ADMIN')">
+  <a th:href="@{/ListeUsers}">Voir la liste complète des utilisateurs (ADMIN)</a>
+</p>
+
+<p><a th:href="@{/}">Accueil</a></p>
+</body>
+</html>

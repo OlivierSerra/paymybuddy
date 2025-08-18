@@ -9,19 +9,20 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner init(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+    public CommandLineRunner init(UserRepository userRepository, PasswordEncoder encoder) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 User admin = new User();
                 admin.setUsername("admin");
                 admin.setEmail("admin@gmail.com");
-                admin.setPassword(encoder.encode("admin4321"));
                 admin.setRole("ADMIN");
+                admin.setPassword(encoder.encode("admin4321"));
                 admin.setBalance(new BigDecimal("100"));
                 userRepository.save(admin);
                 System.out.println("admin créé");
@@ -31,7 +32,7 @@ public class DataInitializer {
                 User user = new User();
                 user.setUsername("aline");
                 user.setEmail("aline@gmail.com");
-                user.setPassword(encoder.encode("root1"));
+                user.setPassword(encoder.encode("r1"));
                 user.setRole("USER");
                 user.setBalance(new BigDecimal("100"));
                 userRepository.save(user);
@@ -42,7 +43,7 @@ public class DataInitializer {
                 User user = new User();
                 user.setUsername("alain");
                 user.setEmail("alain@gmail.com");
-                user.setPassword(encoder.encode("root2"));
+                user.setPassword(encoder.encode("r2"));
                 user.setRole("USER");
                 user.setBalance(new BigDecimal("100"));
                 userRepository.save(user);

@@ -4,6 +4,7 @@
     <a href="transfer?accountNo=1234&amount=100">Transfer Money to John</a>
 	
     <form action="transfer" method="POST">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <label>Account Number</label> 
         <input name="accountNo" type="number"/>
 

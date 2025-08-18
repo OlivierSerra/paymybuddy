@@ -17,6 +17,6 @@ public class LoginController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/ListeUsers";
+        return "redirect:/login";
     }
 }
