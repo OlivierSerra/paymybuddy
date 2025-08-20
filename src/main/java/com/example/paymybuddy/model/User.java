@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 //Je dois encore intégrer connections au USER 
 @Entity
@@ -16,9 +18,12 @@ public class User {
     private Integer id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank
     private String username;
 
     @Column(nullable = false, unique = true)
+    @Email
+    @NotBlank
     private String email;
 
     @Column(nullable = false)
@@ -29,6 +34,8 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    private Boolean onboardingCompleted = false;
 
     public User() {
     }
@@ -90,6 +97,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Boolean getOnboardingCompleted() {
+        return onboardingCompleted;
+    }
+
+    public void setOnboardingCompleted(Boolean v) {
+        this.onboardingCompleted = v;
     }
 
     // les connexions

@@ -91,6 +91,25 @@ public class UserService {
 				.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 	}
 
+	@Transactional
+	public void completeOnboarding(String username, User form) {
+		User user = getRequiredByUsername(username);
+
+		// Ne mets à jour QUE les champs autorisés lors de l’onboarding
+		if (form.getUsername() != null && !form.getUsername().isBlank()) {
+			user.setUsername(form.getUsername());
+		}
+		if (form.getEmail() != null && !form.getEmail().isBlank()) {
+			user.setEmail(form.getEmail());
+		}
+		// Exemples si tu ajoutes d’autres champs d’onboarding :
+		// if (form.getIban() != null) { user.setIban(form.getIban()); }
+
+		user.setOnboardingCompleted(true);
+
+		repo.save(user);
+	}
+
 	// Option : supprime cette méthode si elle n’est pas utilisée,
 	// ou garde-la en encodant aussi le mot de passe si nécessaire.
 	public User saveUser(User user) {
@@ -103,4 +122,18 @@ public class UserService {
 	public void deleteUser(Integer id) {
 		repo.deleteById(id);
 	}
+
+	public Optional<User> findByUsername(String username) {
+		return repo.findByUsername(username);
+	}
+
+	public Optional<User> findByEmail(String email) {
+		return repo.findByEmail(email);
+	}
+
+	public User getRequiredByUsername(String username) {
+		return findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable: " + username));
+	}
+
 }

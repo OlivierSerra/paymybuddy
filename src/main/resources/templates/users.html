@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mon profil</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
+<body>
+
+<header style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+  <div>
+    Connecté en tant que <strong><span sec:authentication="name">utilisateur</span></strong>
+  </div>
+  <form th:action="@{/logout}" method="post" style="margin:0;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit">Se déconnecter</button>
+  </form>
+</header>
+
+<h1>Mon profil</h1>
+
+<p th:if="${param.onboarded}">🎉 Onboarding terminé, bienvenue !</p>
+<p th:if="${param.updated}">✅ Profil mis à jour.</p>
+
+<form th:action="@{/users/me}" th:object="${user}" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+  <div>
+    <label>ID :</label>
+    <input type="text" th:field="*{id}" readonly />
+  </div>
+
+  <div>
+    <label>Username :</label>
+    <input type="text" th:field="*{username}" required />
+  </div>
+
+  <div>
+    <label>Email :</label>
+    <input type="email" th:field="*{email}" required />
+  </div>
+
+  <!-- Ajoute d’autres champs de profil si besoin -->
+
+  <div style="margin-top:1rem;">
+    <button type="submit">Enregistrer</button>
+    <a th:href="@{/}">Retour</a>
+  </div>
+</form>
+
+<hr/>
+<p sec:authorize="hasRole('ADMIN')"><a th:href="@{/ListeUsers}">Vue admin : Liste des utilisateurs</a></p>
+<p><a th:href="@{/}">Accueil</a></p>
+
+</body>
+</html>

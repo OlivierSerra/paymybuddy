@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bienvenue — complétez votre profil</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
+<body>
+
+<header style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+  <div>
+    Connecté en tant que <strong><span sec:authentication="name">utilisateur</span></strong>
+  </div>
+  <form th:action="@{/logout}" method="post" style="margin:0;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit">Se déconnecter</button>
+  </form>
+</header>
+
+<h1>Bienvenue !</h1>
+<p>Pour commencer, merci de compléter vos informations.</p>
+
+<form th:action="@{/onboarding}" th:object="${user}" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+  <div>
+    <label>Username :</label>
+    <input type="text" th:field="*{username}" required />
+  </div>
+
+  <div>
+    <label>Email :</label>
+    <input type="email" th:field="*{email}" required />
+  </div>
+
+  
+  <!-- Ajoute ici les champs “obligatoires” de ton onboarding -->
+  <!--
+  <div>
+    <label>IBAN :</label>
+    <input type="text" th:field="*{iban}" required />
+  </div>
+  -->
+
+  <div style="margin-top:1rem;">
+    <button type="submit">Valider</button>
+  </div>
+</form>
+
+<p style="margin-top:1rem;"><a th:href="@{/}">Retour à l’accueil</a></p>
+
+</body>
+</html>

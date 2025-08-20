@@ -2,6 +2,7 @@ package com.example.paymybuddy.config;
 
 import com.example.paymybuddy.repository.UserRepository;
 
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,9 +45,14 @@ public class SecurityConfig {
                                                                 "/webjars/**")
                                                 .permitAll()
                                                 .requestMatchers("/ListeUsers", "/ListeTransactions").permitAll()
-                                                .requestMatchers("/buddies/**", "/transactions/**").authenticated()
+                                                .requestMatchers("/buddies/**", "/transactions/**", "/landingPageUser/")
+                                                .authenticated()
+                                                .requestMatchers("/landingPageUser/**", "/user/**", "/buddies/**",
+                                                                "/transactions/**")
+                                                .authenticated()
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
+                                                .loginPage("/login").permitAll()
                                                 .defaultSuccessUrl("/landingPageUser", false)
                                                 .permitAll())
                                 .logout(logout -> logout
