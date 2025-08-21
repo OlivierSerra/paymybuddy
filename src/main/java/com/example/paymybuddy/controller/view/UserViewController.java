@@ -22,16 +22,13 @@ public class UserViewController {
     // GET /onboarding : affiche le formulaire avec les données actuelles
     @GetMapping("/onboarding")
     public String onboarding(Model model, Principal principal) {
-        User me = userService.findByUsername(principal.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+        User me = userService.getRequiredByEmail(principal.getName());
 
-        // Si déjà complété, on peut envoyer vers /users/me
         if (Boolean.TRUE.equals(me.getOnboardingCompleted())) {
-            return "redirect:/users/me";
+            return "redirect:/me";
         }
-
         model.addAttribute("user", me);
-        return "/onboarding"; // ton template
+        return "onboarding"; // ton template
     }
 
     // POST onboarding : traite le formulaire
@@ -42,9 +39,8 @@ public class UserViewController {
             Model model) {
         if (binding.hasErrors()) {
             // réaffiche le formulaire avec erreurs
-            return "/onboarding";
+            return "onboarding";
         }
-
         userService.completeOnboarding(principal.getName(), form);
         return "redirect:/me?onboarded";
     }
@@ -52,7 +48,7 @@ public class UserViewController {
     // (facultatif) ta page profil
     @GetMapping("/me")
     public String showMyProfile(Model model, Principal principal) {
-        User me = userService.getRequiredByUsername(principal.getName());
+        User me = userService.getRequiredByEmail(principal.getName());
         model.addAttribute("user", me);
         return "users/me";
     }

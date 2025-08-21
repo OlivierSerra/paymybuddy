@@ -32,8 +32,7 @@ public class LandingPageController {
             // visiteur : landing publique
             return "landingPageUser"; // templates/landingPageUser.html
         }
-        var me = userService.findByUsername(principal.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+        var me = userService.getRequiredByEmail(principal.getName());
 
         if (!Boolean.TRUE.equals(me.getOnboardingCompleted())) {
             return "redirect:/onboarding";

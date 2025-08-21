@@ -17,74 +17,74 @@ import java.util.stream.Collectors;
 @RequestMapping("/buddies")
 public class BuddiesViewController {
 
-    private final UserRepository userRepository;
+        private final UserRepository userRepository;
 
-    public BuddiesViewController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    // Liste des buddies de l'utilisateur connecté
-    @GetMapping
-    public String list(Principal principal, Model model) {
-        User me = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Set<User> buddies = me.getBuddies();
-
-        Set<Integer> buddyIds = buddies.stream()
-                .map(User::getId)
-                .collect(Collectors.toSet());
-
-        List<User> candidates = userRepository.findAll().stream()
-                .filter(u -> !Objects.equals(u.getId(), me.getId())) // exclure soi-même
-                .filter(u -> !buddyIds.contains(u.getId())) // exclure déjà buddies
-                .collect(Collectors.toList());
-
-        // Pour ne pas toucher à ton template existant
-        model.addAttribute("owner", me);
-        model.addAttribute("buddies", buddies);
-        model.addAttribute("candidates", candidates);
-        return "buddies";
-    }
-
-    // Ajouter un buddy pour l'utilisateur connecté
-    @PostMapping("/add")
-    public String add(@RequestParam String buddy, Principal principal, RedirectAttributes ra) {
-        User me = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        User b = userRepository.findByUsername(buddy)
-                .orElseThrow(() -> new RuntimeException("Buddy not found"));
-
-        if (Objects.equals(me.getId(), b.getId())) {
-            ra.addFlashAttribute("error", "Impossible de vous ajouter vous-même.");
-            return "redirect:/buddies";
+        public BuddiesViewController(UserRepository userRepository) {
+                this.userRepository = userRepository;
         }
 
-        boolean alreadyBuddy = me.getBuddies().stream()
-                .anyMatch(bb -> Objects.equals(bb.getId(), b.getId()));
-        if (alreadyBuddy) {
-            ra.addFlashAttribute("error", "Cet utilisateur est déjà dans vos buddies.");
-            return "redirect:/buddies";
+        // Liste des buddies de l'utilisateur connecté
+        @GetMapping
+        public String list(Principal principal, Model model) {
+                User me = userRepository.findByEmail(principal.getName())
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                Set<User> buddies = me.getBuddies();
+
+                Set<Integer> buddyIds = buddies.stream()
+                                .map(User::getId)
+                                .collect(Collectors.toSet());
+
+                List<User> candidates = userRepository.findAll().stream()
+                                .filter(u -> !Objects.equals(u.getId(), me.getId())) // exclure soi-même
+                                .filter(u -> !buddyIds.contains(u.getId())) // exclure déjà buddies
+                                .collect(Collectors.toList());
+
+                // Pour ne pas toucher à ton template existant
+                model.addAttribute("owner", me);
+                model.addAttribute("buddies", buddies);
+                model.addAttribute("candidates", candidates);
+                return "buddies";
         }
 
-        me.getBuddies().add(b);
-        userRepository.save(me);
-        ra.addFlashAttribute("success", "Buddy ajouté !");
-        return "redirect:/buddies";
-    }
+        // Ajouter un buddy pour l'utilisateur connecté
+        @PostMapping("/add")
+        public String add(@RequestParam String buddyEmail, Principal principal, RedirectAttributes ra) {
+                User me = userRepository.findByEmail(principal.getName())
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+                User b = userRepository.findByEmail(buddyEmail)
+                                .orElseThrow(() -> new RuntimeException("Buddy not found"));
 
-    // Retirer un buddy
-    @PostMapping("/remove")
-    public String remove(@RequestParam String buddy, Principal principal, RedirectAttributes ra) {
-        User me = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        User b = userRepository.findByUsername(buddy)
-                .orElseThrow(() -> new RuntimeException("Buddy not found"));
+                if (Objects.equals(me.getId(), b.getId())) {
+                        ra.addFlashAttribute("error", "Impossible de vous ajouter vous-même.");
+                        return "redirect:/buddies";
+                }
 
-        me.getBuddies().removeIf(bb -> Objects.equals(bb.getId(), b.getId()));
-        userRepository.save(me);
+                boolean alreadyBuddy = me.getBuddies().stream()
+                                .anyMatch(bb -> Objects.equals(bb.getId(), b.getId()));
+                if (alreadyBuddy) {
+                        ra.addFlashAttribute("error", "Cet utilisateur est déjà dans vos buddies.");
+                        return "redirect:/buddies";
+                }
 
-        ra.addFlashAttribute("success", "Buddy retiré.");
-        return "redirect:/buddies";
-    }
+                me.getBuddies().add(b);
+                userRepository.save(me);
+                ra.addFlashAttribute("success", "Buddy ajouté !");
+                return "redirect:/buddies";
+        }
+
+        // Retirer un buddy
+        @PostMapping("/remove")
+        public String remove(@RequestParam String buddyEmail, Principal principal, RedirectAttributes ra) {
+                User me = userRepository.findByEmail(principal.getName())
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+                User b = userRepository.findByEmail(buddyEmail)
+                                .orElseThrow(() -> new RuntimeException("Buddy not found"));
+
+                me.getBuddies().removeIf(bb -> Objects.equals(bb.getId(), b.getId()));
+                userRepository.save(me);
+
+                ra.addFlashAttribute("success", "Buddy retiré.");
+                return "redirect:/buddies";
+        }
 }

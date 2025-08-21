@@ -18,13 +18,14 @@
   <input type="text" name="senderUsername" placeholder="expéditeur (username)"/>
 
   <label>Destinataire</label>
-  <select th:field="*{receiverUsername}">
+  <select th:field="*{receiverEmail}">
     <option value="" disabled selected>-- choisir --</option>
-    <option th:each="u : ${receivers}"
-            th:value="${u.username}"
-            th:text="${u.username} + ' (' + ${u.email} + ')'"></option>
+    <option th:each="u : ${users}"
+        th:value="${u.email}"
+        th:text="${u.username} + ' (' + u.email + ')'"> 
+    </option>
   </select>
-  <div th:if="${#fields.hasErrors('receiverUsername')}" th:errors="*{receiverUsername}"></div>
+  <div th:if="${#fields.hasErrors('receiverEmail')}" th:errors="*{receiverEmail}"></div>
 
   <label>Montant</label>
   <input type="number" step="0.01" th:field="*{amount}"/>

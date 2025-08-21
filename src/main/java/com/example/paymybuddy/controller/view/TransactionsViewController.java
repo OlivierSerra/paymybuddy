@@ -2,6 +2,8 @@ package com.example.paymybuddy.controller.view;
 
 // ...
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,20 +44,24 @@ public class TransactionsViewController {
     }
 
     @GetMapping("/new")
-    public String newTransaction(Model model) {
+    public String newTransaction(Model model, Principal principal) {
         // model.addAttribute("transaction", new TransactionRequest());
         if (!model.containsAttribute("transaction")) {
             model.addAttribute("transaction", new TransactionRequest());
         }
-
-        model.addAttribute("receivers", userRepository.findAll());
+        /*
+         * List<User> users = userRepository.findAll().stream()
+         * .filter(u -> !u.getEmail().equalsIgnoreCase(principal.getName()))
+         * .toList();
+         */
+        model.addAttribute("users", userRepository.findAll());
         return "transaction";
     }
 
     @GetMapping("/ListeTransactions")
     public String listTransaction(Model model, Principal principal) {
         String username = principal.getName();
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Récupère envoyées + reçues, fusionne, déduplique par id, trie par timestamp
@@ -88,7 +94,7 @@ public class TransactionsViewController {
         try {
             transactionService.makeTransaction(
                     principal.getName(),
-                    form.getReceiverUsername(),
+                    form.getReceiverEmail(),
                     form.getAmount(),
                     form.getDescription());
             ra.addFlashAttribute("success", "Virement effectué !");

@@ -2,7 +2,7 @@ package com.example.paymybuddy.config;
 
 import com.example.paymybuddy.repository.UserRepository;
 
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
+//import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,6 +39,7 @@ public class SecurityConfig {
                         throws Exception {
                 http
                                 // .csrf(csrf -> csrf.disable()) // pour tes formulaires actuels sans token CSRF
+                                .authenticationProvider(authenticationProvider)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/login", "/favicon.ico",
                                                                 "/style.css", "/css/**", "/js/**", "/images/**",
@@ -53,6 +54,7 @@ public class SecurityConfig {
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login").permitAll()
+                                                .usernameParameter("email")
                                                 .defaultSuccessUrl("/landingPageUser", false)
                                                 .permitAll())
                                 .logout(logout -> logout
@@ -64,12 +66,12 @@ public class SecurityConfig {
 
         @Bean
         public UserDetailsService userDetailsService(UserRepository userRepository) {
-                return username -> userRepository.findByUsername(username)
+                return loginEmail -> userRepository.findByEmail(loginEmail)
                                 .map(u -> org.springframework.security.core.userdetails.User
-                                                .withUsername(u.getUsername())
+                                                .withUsername(u.getEmail())
                                                 .password(u.getPassword()) // doit être BCrypt !
                                                 .roles(u.getRole()) // ex: "USER" ou "ADMIN" (sans le prefix "ROLE_")
                                                 .build())
-                                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + loginEmail));
         }
 }

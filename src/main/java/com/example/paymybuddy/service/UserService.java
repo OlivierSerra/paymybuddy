@@ -92,8 +92,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public void completeOnboarding(String username, User form) {
-		User user = getRequiredByUsername(username);
+	public void completeOnboarding(String emailOfPrincipal, User form) {
+		User user = getRequiredByEmail(emailOfPrincipal);
 
 		// Ne mets à jour QUE les champs autorisés lors de l’onboarding
 		if (form.getUsername() != null && !form.getUsername().isBlank()) {
@@ -136,4 +136,8 @@ public class UserService {
 				.orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable: " + username));
 	}
 
+	public User getRequiredByEmail(String email) {
+		return findByEmail(email)
+				.orElseThrow(() -> new IllegalArgumentException("email introuvable: " + email));
+	}
 }

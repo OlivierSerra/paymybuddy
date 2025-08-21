@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class TransactionRequest {
 
     @NotBlank
-    private String receiverUsername;
+    private String receiverEmail;
 
     @NotNull
     @Positive
@@ -19,12 +19,12 @@ public class TransactionRequest {
     private String description;
 
     // getters et setters pour accéder aux variables
-    public String getReceiverUsername() {
-        return receiverUsername;
+    public String getReceiverEmail() {
+        return receiverEmail;
     }
 
-    public void setReceiverUsername(String receiverUsername) {
-        this.receiverUsername = receiverUsername;
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
     }
 
     public BigDecimal getAmount() {

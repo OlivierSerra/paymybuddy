@@ -23,16 +23,16 @@
 <form th:action="@{/onboarding}" th:object="${user}" method="post">
   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-  <div>
-    <label>Username :</label>
-    <input type="text" th:field="*{username}" required />
-  </div>
 
   <div>
     <label>Email :</label>
     <input type="email" th:field="*{email}" required />
   </div>
 
+  <div>
+    <label>mot de passe :</label>
+    <input type="password" th:field="*{password}" required />
+  </div>
   
   <!-- Ajoute ici les champs “obligatoires” de ton onboarding -->
   <!--
@@ -48,6 +48,8 @@
 </form>
 
 <p style="margin-top:1rem;"><a th:href="@{/}">Retour à l’accueil</a></p>
+
+<p><a th:href="@{/transactions/new}">Faire un virement à un buddy</a></p>
 
 </body>
 </html>

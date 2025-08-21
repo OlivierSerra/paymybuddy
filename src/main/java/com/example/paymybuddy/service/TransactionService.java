@@ -4,6 +4,9 @@ import com.example.paymybuddy.model.Transaction;
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.repository.TransactionRepository;
 import com.example.paymybuddy.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 public class TransactionService {
 
     @Autowired
@@ -20,11 +24,13 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public Transaction makeTransaction(String senderUsername, String receiverUsername,
-            BigDecimal amount, String description) {
-        User sender = userRepository.findByUsername(senderUsername)
+    public Transaction makeTransaction(String senderEmail,
+            String receiverEmail,
+            BigDecimal amount,
+            String description) {
+        User sender = userRepository.findByEmail(senderEmail)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
-        User receiver = userRepository.findByUsername(receiverUsername)
+        User receiver = userRepository.findByEmail(receiverEmail)
                 .orElseThrow(() -> new RuntimeException("Receiver notfound"));
 
         if (sender.getBalance().compareTo(amount) < 0) {
