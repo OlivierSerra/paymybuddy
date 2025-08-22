@@ -45,13 +45,12 @@ public class SecurityConfig {
                                                                 "/style.css", "/css/**", "/js/**", "/images/**",
                                                                 "/webjars/**")
                                                 .permitAll()
-                                                .requestMatchers("/ListeUsers", "/ListeTransactions").permitAll()
-                                                .requestMatchers("/buddies/**", "/transactions/**", "/landingPageUser/")
-                                                .authenticated()
-                                                .requestMatchers("/landingPageUser/**", "/user/**", "/buddies/**",
+                                                .requestMatchers("/ListeUsers").hasRole("ADMIN")
+                                                .requestMatchers("/ListeTransactions").hasRole("USER")
+                                                .requestMatchers("/landingPageUser/**", "/users/**", "/buddies/**",
                                                                 "/transactions/**")
                                                 .authenticated()
-                                                .anyRequest().authenticated())
+                                                .anyRequest().permitAll())
                                 .formLogin(form -> form
                                                 .loginPage("/login").permitAll()
                                                 .usernameParameter("email")
@@ -59,7 +58,7 @@ public class SecurityConfig {
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
-                                                .logoutSuccessUrl("/login?logout"));
+                                                .permitAll());
 
                 return http.build();
         }

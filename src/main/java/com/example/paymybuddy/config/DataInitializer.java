@@ -24,6 +24,7 @@ public class DataInitializer {
                 admin.setRole("ADMIN");
                 admin.setPassword(encoder.encode("admin4321"));
                 admin.setBalance(new BigDecimal("100"));
+                admin.setBankAccount(789456123);
                 userRepository.save(admin);
                 System.out.println("admin créé");
 
@@ -35,6 +36,7 @@ public class DataInitializer {
                 user.setPassword(encoder.encode("r1"));
                 user.setRole("USER");
                 user.setBalance(new BigDecimal("100"));
+                user.setBankAccount(321654987);
                 userRepository.save(user);
                 System.out.println("aline créé");
 
@@ -46,6 +48,7 @@ public class DataInitializer {
                 user.setPassword(encoder.encode("r2"));
                 user.setRole("USER");
                 user.setBalance(new BigDecimal("100"));
+                user.setBankAccount(456123789);
                 userRepository.save(user);
                 System.out.println("alain créé");
 

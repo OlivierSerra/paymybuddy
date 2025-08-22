@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -21,6 +21,7 @@
 
 <h1>Liste des utilisateurs</h1>
 
+
 <table>
   <thead>
     <tr>
@@ -29,6 +30,7 @@
       <th>Email</th>
       <th>Rôle</th>
       <th>Solde</th>
+      <th>BankAccount</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -39,6 +41,7 @@
       <td th:text="${u.email}">alice@mail.com</td>
       <td th:text="${u.role}">USER</td>
       <td th:text="${u.balance}">100.00</td>
+      <td th:text="${u.bankAccount}">789456123</td>
       <td>
         <!-- Lien visible uniquement pour les ADMIN -->
         <a sec:authorize="hasRole('ADMIN')"

@@ -35,18 +35,20 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    private Boolean onboardingCompleted = false;
+    @Column(nullable = false)
+    private Integer bankAccount;
 
     public User() {
     }
 
     // Constructeur de User
-    public User(int id, String username, String email, String password, BigDecimal balance) {
+    public User(int id, String username, String email, String password, BigDecimal balance, Integer bankAccount) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.balance = balance;
+        this.bankAccount = bankAccount;
     }
 
     // Getters & Setters
@@ -99,12 +101,12 @@ public class User {
         this.role = role;
     }
 
-    public Boolean getOnboardingCompleted() {
-        return onboardingCompleted;
+    public Integer getBankAccount() {
+        return this.bankAccount;
     }
 
-    public void setOnboardingCompleted(Boolean v) {
-        this.onboardingCompleted = v;
+    public void setBankAccount(Integer bankAccount) {
+        this.bankAccount = bankAccount;
     }
 
     // les connexions

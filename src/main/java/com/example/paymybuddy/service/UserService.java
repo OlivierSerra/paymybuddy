@@ -105,8 +105,6 @@ public class UserService {
 		// Exemples si tu ajoutes d’autres champs d’onboarding :
 		// if (form.getIban() != null) { user.setIban(form.getIban()); }
 
-		user.setOnboardingCompleted(true);
-
 		repo.save(user);
 	}
 
@@ -139,5 +137,9 @@ public class UserService {
 	public User getRequiredByEmail(String email) {
 		return findByEmail(email)
 				.orElseThrow(() -> new IllegalArgumentException("email introuvable: " + email));
+	}
+
+	public Object findAll() {
+		return repo.findAll();
 	}
 }

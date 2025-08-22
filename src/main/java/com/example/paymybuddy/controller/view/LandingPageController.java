@@ -33,10 +33,6 @@ public class LandingPageController {
             return "landingPageUser"; // templates/landingPageUser.html
         }
         var me = userService.getRequiredByEmail(principal.getName());
-
-        if (!Boolean.TRUE.equals(me.getOnboardingCompleted())) {
-            return "redirect:/onboarding";
-        }
-        return "redirect:/me";
+        return "landingPageUser";
     }
 }
