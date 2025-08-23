@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,6 +130,11 @@ public class UserService {
 		return repo.findByEmail(email);
 	}
 
+	public User getCurrentUser(Principal principal) {
+		return repo.findByEmail(principal.getName())
+				.orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
+	}
+
 	public User getRequiredByUsername(String username) {
 		return findByUsername(username)
 				.orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable: " + username));
@@ -139,7 +145,43 @@ public class UserService {
 				.orElseThrow(() -> new IllegalArgumentException("email introuvable: " + email));
 	}
 
-	public Object findAll() {
+	public List<User> findAll() {
 		return repo.findAll();
+	}
+
+	// alimenter le compte
+	/**
+	 * 
+	 * @param principal utilisateur connecté
+	 * @param amount    montant à ajouter
+	 * @return user mis à jour avec nouveau solde
+	 *
+	 */
+	public User creditAccount(Principal principal, BigDecimal amount) {
+		if (amount == null || amount.signum() <= 0) {
+			throw new IllegalArgumentException("Montant invalide");
+		}
+		User me = getCurrentUser(principal);
+		me.setBalance(me.getBalance().add(amount));
+		return repo.save(me);
+	}
+
+	// retirer de argent du compte
+	/**
+	 * 
+	 * @param principal user connecté
+	 * @param amount    solde du compte positif à retirer
+	 * @return nouveau solde renvoyé et persisté dans la BDD
+	 */
+	public User withdrawMoney(Principal principal, BigDecimal amount) {
+		if (amount == null || amount.signum() <= 0) {
+			throw new IllegalArgumentException("Montant invalide");
+		}
+		User me = getCurrentUser(principal);
+		if (me.getBalance().compareTo(amount) < 0) {
+			throw new RuntimeException("Solde insufissant");
+		}
+		me.setBalance(me.getBalance().subtract(amount));
+		return repo.save(me);
 	}
 }

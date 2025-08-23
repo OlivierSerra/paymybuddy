@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mon compte & solde</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
+<body>
+
+<header style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+  <div>Connecté en tant que <strong th:text="${user.email}">user@mail.com</strong></div>
+  <form th:action="@{/logout}" method="post" style="margin:0;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit">Se déconnecter</button>
+  </form>
+</header>
+
+<h1>Mon compte &amp; solde</h1>
+
+<p th:if="${success}" style="color:green;" th:text="${success}"></p>
+<p th:if="${error}" style="color:red;" th:text="${error}"></p>
+
+<div class="card">
+  <p><strong>Solde disponible :</strong>
+    <span th:text="${#numbers.formatDecimal(user.balance, 1, 'COMMA', 2, 'POINT')}">0,00</span> €
+  </p>
+  <p><strong>Compte bancaire :</strong> <span th:text="${user.bankAccount}">FR76…</span></p>
+</div>
+
+<h2>Créditer mon solde</h2>
+<form th:action="@{/account/creditAccount}" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+  <input type="number" name="amount" step="0.01" min="0.01" placeholder="Montant en €" required />
+  <button type="submit">Créditer</button>
+</form>
+
+<h2>Retirer vers mon compte bancaire</h2>
+<form th:action="@{/account/withdrawMoney}" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+  <input type="number" name="amount" step="0.01" min="0.01" placeholder="Montant en €" required />
+  <button type="submit">Retirer</button>
+</form>
+
+<p style="margin-top:1rem;"><a th:href="@{/}">Accueil</a></p>
+</body>
+</html>

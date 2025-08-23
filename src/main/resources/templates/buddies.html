@@ -51,10 +51,8 @@
   </tbody>
 </table>
 
-<!-- Lien simple, plus besoin de passer sender -->
 <p><a th:href="@{/transactions/new}">Faire un virement à un buddy</a></p>
 
-<!-- Exemples d’utilisation de sec:authorize -->
 <p sec:authorize="hasRole('ADMIN')">
   <a th:href="@{/ListeUsers}">Voir la liste complète des utilisateurs (ADMIN)</a>
 </p>

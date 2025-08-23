@@ -55,7 +55,7 @@
 
 <hr>
 
-<!-- Liens “utilisateur connecté” (aucun paramètre owner : on utilisera Principal côté contrôleur) -->
+
 <p sec:authorize="isAuthenticated()"><a th:href="@{/buddies}">Mes buddies</a></p>
 <p sec:authorize="isAuthenticated()"><a th:href="@{/transactions/new}">Nouveau virement</a></p>
 <p><a th:href="@{/}">Accueil</a></p>
