@@ -1,6 +1,7 @@
 package com.example.paymybuddy.controller.view;
 
 import com.example.paymybuddy.service.UserService;
+import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.repository.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +33,11 @@ public class LandingPageController {
             // visiteur : landing publique
             return "landingPageUser"; // templates/landingPageUser.html
         }
-        var me = userService.getRequiredByEmail(principal.getName());
+        User me = userService.getRequiredByEmail(principal.getName());
+
+        if (!Boolean.TRUE.equals(me.getOnboardingCompleted())) {
+            return "redirect:/onboarding";
+        }
         return "landingPageUser";
     }
 }

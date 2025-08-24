@@ -38,6 +38,8 @@ public class User {
     @Column(nullable = false)
     private Integer bankAccount;
 
+    private Boolean onboardingCompleted = false;
+
     public User() {
     }
 
@@ -107,6 +109,14 @@ public class User {
 
     public void setBankAccount(Integer bankAccount) {
         this.bankAccount = bankAccount;
+    }
+
+    public Boolean getOnboardingCompleted() {
+        return onboardingCompleted;
+    }
+
+    public void setOnboardingCompleted(Boolean v) {
+        this.onboardingCompleted = v;
     }
 
     // les connexions

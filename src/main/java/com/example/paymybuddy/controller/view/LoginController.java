@@ -17,4 +17,5 @@ public class LoginController {
     public String home() {
         return "redirect:/login";
     }
+
 }

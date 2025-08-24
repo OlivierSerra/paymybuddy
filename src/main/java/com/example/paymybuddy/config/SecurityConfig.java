@@ -41,7 +41,7 @@ public class SecurityConfig {
                                 // .csrf(csrf -> csrf.disable()) // pour tes formulaires actuels sans token CSRF
                                 .authenticationProvider(authenticationProvider)
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/", "/login", "/favicon.ico",
+                                                .requestMatchers("/", "/login", "/register", "/favicon.ico",
                                                                 "/style.css", "/css/**", "/js/**", "/images/**",
                                                                 "/webjars/**")
                                                 .permitAll()
@@ -50,11 +50,12 @@ public class SecurityConfig {
                                                 .requestMatchers("/landingPageUser/**", "/users/**", "/buddies/**",
                                                                 "/transactions/**")
                                                 .authenticated()
-                                                .anyRequest().permitAll())
+                                                .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login").permitAll()
                                                 .usernameParameter("email")
-                                                .defaultSuccessUrl("/landingPageUser", false)
+                                                .passwordParameter("password")
+                                                .defaultSuccessUrl("/landingPageUser", true)
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
