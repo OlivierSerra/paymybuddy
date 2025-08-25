@@ -25,15 +25,15 @@
 
 
   <div>
+    <label>nom d'utilisateur :</label>
+    <input type="text" th:field="*{username}" required />
+  </div>
+
+  <div>
     <label>Email :</label>
     <input type="email" th:field="*{email}" required />
   </div>
 
-  <div>
-    <label>mot de passe :</label>
-    <input type="password" th:field="*{password}" required />
-  </div>
-  
   <!-- Ajoute ici les champs “obligatoires” de ton onboarding -->
   
   <div>

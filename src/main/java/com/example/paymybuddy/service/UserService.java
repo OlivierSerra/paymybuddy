@@ -2,6 +2,9 @@ package com.example.paymybuddy.service;
 
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.repository.UserRepository;
+
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -57,16 +61,44 @@ public class UserService {
 		return repo.findById(id);
 	}
 
+	@Transactional
 	public User createUser(User user) {
-		if (user.getPassword() == null || user.getPassword().isBlank()) {
+		if (user.getEmail() == null || user.getEmail().isBlank())
+			throw new IllegalArgumentException("Email requis");
+		if (user.getPassword() == null || user.getPassword().isBlank())
 			throw new IllegalArgumentException("Mot de passe requis");
+
+		user.setEmail(user.getEmail().trim().toLowerCase(Locale.ROOT));
+
+		if (user.getUsername() == null || user.getUsername().isBlank()) {
+			user.setUsername(generateUniqueUsernameFromEmail(user.getEmail()));
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		if (user.getBalance() == null)
 			user.setBalance(BigDecimal.ZERO);
+		if (user.getBankAccount() == null)
+			user.setBankAccount(0);
 		if (user.getRole() == null || user.getRole().isBlank())
 			user.setRole("USER");
 		return repo.save(user);
+	}
+
+	private String generateUniqueUsernameFromEmail(String email) {
+		String local = email.substring(0, email.indexOf('@'))
+				.replaceAll("[^a-zA-Z0-9_.-]", "")
+				.toLowerCase();
+		if (local.isBlank())
+			local = "user";
+		String candidate = local;
+		int i = 1;
+		while (repo.existsByUsername(candidate)) {
+			candidate = local + i++;
+		}
+		return candidate;
+	}
+
+	public boolean existsByEmail(String email) {
+		return repo.existsByEmail(email.trim().toLowerCase(Locale.ROOT));
 	}
 
 	@Transactional
@@ -101,19 +133,22 @@ public class UserService {
 			user.setUsername(form.getUsername());
 		}
 		if (form.getEmail() != null && !form.getEmail().isBlank()) {
-			user.setEmail(form.getEmail());
+			user.setEmail(normalizeEmail(form.getEmail()));
 		}
-		// Exemples si tu ajoutes d’autres champs d’onboarding :
-		// if (form.getIban() != null) { user.setIban(form.getIban()); }
 
+		if (form.getBankAccount() != null) {
+			user.setBankAccount(form.getBankAccount());
+		}
+
+		user.setOnboardingCompleted(true);
 		repo.save(user);
 	}
 
-	// Option : supprime cette méthode si elle n’est pas utilisée,
-	// ou garde-la en encodant aussi le mot de passe si nécessaire.
+	private static String normalizeEmail(String s) {
+		return s == null ? null : s.trim().toLowerCase(Locale.ROOT);
+	}
+
 	public User saveUser(User user) {
-		// Attention: si tu passes ici pour créer/maj un user,
-		// assure-toi d'encoder le password AVANT d'appeler saveUser.
 		return repo.save(user);
 	}
 
@@ -184,4 +219,18 @@ public class UserService {
 		me.setBalance(me.getBalance().subtract(amount));
 		return repo.save(me);
 	}
+
+	// mappage updateProfile avec updateUser
+	@Transactional
+	public User updateProfile(String email, User form) {
+		User me = getRequiredByEmail(email);
+
+		User connectedUser = new User();
+		connectedUser.setUsername(form.getUsername());
+		connectedUser.setEmail(email);
+		connectedUser.setPassword(form.getPassword());
+
+		return updateUser(me.getId(), connectedUser);
+	}
+
 }

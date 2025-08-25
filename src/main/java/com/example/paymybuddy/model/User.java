@@ -35,10 +35,10 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
+    @Column(name = "bankAccount", nullable = false)
     private Integer bankAccount;
 
-    private Boolean onboardingCompleted = false;
+    private Boolean onboardingCompleted;
 
     public User() {
     }
@@ -51,6 +51,18 @@ public class User {
         this.password = password;
         this.balance = balance;
         this.bankAccount = bankAccount;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (balance == null)
+            balance = BigDecimal.ZERO;
+        if (bankAccount == null)
+            bankAccount = 0;
+        if (role == null || role.isBlank())
+            role = "USER";
+        if (onboardingCompleted == null)
+            onboardingCompleted = false;
     }
 
     // Getters & Setters

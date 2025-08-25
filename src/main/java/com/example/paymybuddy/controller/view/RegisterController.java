@@ -29,7 +29,7 @@ public class RegisterController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/register")
+    @GetMapping
     public String Form(Model model) {
         model.addAttribute("registerForm", new RegisterForm());
         return "register";
@@ -45,15 +45,19 @@ public class RegisterController {
      */
 
     @PostMapping
-    public String submit(@Valid @ModelAttribute("form") RegisterForm form,
+    public String submit(@Valid @ModelAttribute("registerForm") RegisterForm form,
             BindingResult br,
             RedirectAttributes ra) {
         if (br.hasErrors())
             return "register";
 
+        if (userService.existsByEmail(form.getEmail())) {
+            br.rejectValue("email", "duplicate", "Un compte existe déjà avec cet email.");
+            return "register";
+        }
         User u = new User();
         u.setEmail(form.getEmail());
-        u.setPassword(passwordEncoder.encode(form.getPassword()));
+        u.setPassword(form.getPassword());
         u.setOnboardingCompleted(false);
 
         userService.createUser(u);

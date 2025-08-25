@@ -1,5 +1,6 @@
 package com.example.paymybuddy.config;
 
+import com.example.paymybuddy.controller.view.OnBoardingViewController;
 import com.example.paymybuddy.repository.UserRepository;
 
 //import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
@@ -51,14 +52,17 @@ public class SecurityConfig {
                                                                 "/transactions/**")
                                                 .authenticated()
                                                 .anyRequest().authenticated())
-                                .formLogin(form -> form
+                                .formLogin(login -> login
                                                 .loginPage("/login").permitAll()
+                                                .loginProcessingUrl("/login")
                                                 .usernameParameter("email")
                                                 .passwordParameter("password")
-                                                .defaultSuccessUrl("/landingPageUser", true)
+                                                .failureUrl("/login?error")
+                                                .defaultSuccessUrl("/onboarding", true)
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/login?logout")
                                                 .permitAll());
 
                 return http.build();

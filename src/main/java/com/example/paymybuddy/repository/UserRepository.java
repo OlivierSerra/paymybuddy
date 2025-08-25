@@ -10,4 +10,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);
+
+    // utile pour la génération automatique d'un username (à changer par la suite)
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }
