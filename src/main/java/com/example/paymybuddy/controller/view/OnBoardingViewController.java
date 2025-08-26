@@ -47,14 +47,14 @@ public class OnBoardingViewController {
         return "redirect:/landingPageUser";
     }
 
-    @GetMapping("/me")
+    @GetMapping({ "/me", "/me/" })
     public String showMyProfile(Model model, Principal principal) {
         User me = userService.getRequiredByEmail(principal.getName());
         model.addAttribute("user", me);
         return "users";
     }
 
-    @PostMapping("/users/me")
+    @PostMapping({ "/me", "/me/" })
     public String updateMyProfile(@Valid @ModelAttribute("user") User form,
             BindingResult binding,
             Principal principal,
@@ -64,7 +64,7 @@ public class OnBoardingViewController {
             return "users/me";
         }
         userService.updateProfile(principal.getName(), form);
-        return "redirect:/me/?updated";
+        return "redirect:/me";
     }
 
 }
