@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;

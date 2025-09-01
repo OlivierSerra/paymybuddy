@@ -4,13 +4,35 @@
   <meta charset="UTF-8" />
   <title>Bienvenue — complétez votre profil</title>
   <link rel="stylesheet" th:href="@{/style.css}" />
+  <style>
+    :root{
+      --brand:#f39c12;   /* orange du titre */
+      --accent:#1676f3;  /* bleu du bouton */
+      --text:#1f2937;
+      --field-border:#e6e9ef;
+      --bg:#fafafa;
+    } 
+    *{ box-sizing:border-box }
+    body{ background: var(--bg); color: var(--text); font-family: Arial, Helvetica, sans-serif}
+    h1{ display:inline-block;   width:max-content;margin:0 0 16px auto; background:var(--brand); color:#fff; padding:10px 18px; border-radius:10px; }
+    
+    
+
+    input{
+      border: 1px solid var(--field border);
+      padding: 12px 14px; border-radius:10px; width:100%; max-width:320px;
+    }
+    
+  input::placeholder{color:#9ca3af; font-weight:700}
+    button{
+      background: var(--accent); color:#fff; border:0; border-radius:10px;
+      padding:12px 16px; font-weight: 700;cursor: pointer;
+    }
+  p a{color:var(--accent); text-decoration:none}
+  p a:hover{text-decoration:underline}
+  </style>
 </head>
 <body>
-
-<header style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
-  
- 
-</header>
 
 <h1>Bienvenue !</h1>
 <p>Pour commencer, veuillez vous enregistrer. Vous serez ensuite rediriger vers la page d'accueil afin de terminer le processus d'enregistrement.</p>
@@ -23,14 +45,18 @@
   <div>
     <label>Email :</label>
     <input type="email" th:field="*{email}" required />
+    <div th:errors="*{email}" style="color:#b91c1c; font-size:.9em;">
+    </div>
   </div>
 
   <div>
     <label>mot de passe :</label>
     <input type="password" th:field="*{password}" required />
+    <div th:if="${#fields.hasErrors('password')}"
+        th:errors="*{password}"
+        style="color:red; font-size:0.9em;">
+    </div>
   </div> 
-  
-  <!-- Ajoute ici les champs “obligatoires” de ton onboarding -->
   
   <div style="margin-top:1rem;">
     <button type="submit">Valider</button>
