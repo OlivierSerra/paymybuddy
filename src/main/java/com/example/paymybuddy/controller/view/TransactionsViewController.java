@@ -49,11 +49,10 @@ public class TransactionsViewController {
         if (!model.containsAttribute("transaction")) {
             model.addAttribute("transaction", new TransactionRequest());
         }
-        /*
-         * List<User> users = userRepository.findAll().stream()
-         * .filter(u -> !u.getEmail().equalsIgnoreCase(principal.getName()))
-         * .toList();
-         */
+        String me = principal.getName();
+        List<User> users = userRepository.findAll().stream()
+                .filter(u -> !u.getEmail().equalsIgnoreCase(me))
+                .toList();
         model.addAttribute("users", userRepository.findAll());
         return "transaction";
     }
@@ -91,6 +90,14 @@ public class TransactionsViewController {
             ra.addFlashAttribute("transaction", form);
             return "redirect:/transactions/new";
         }
+
+        String sender = principal.getName();
+        if (sender.equalsIgnoreCase(form.getReceiverEmail())) {
+            ra.addFlashAttribute("error", "Vous ne pouvez pas vous faire un virement.");
+            ra.addFlashAttribute("transaction", form);
+            return "redirect:/transactions/new";
+        }
+
         try {
             transactionService.makeTransaction(
                     principal.getName(),

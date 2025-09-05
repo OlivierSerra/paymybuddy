@@ -3,37 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <title>Nouvelle transaction</title>
-  <link rel="stylesheet" th:href="@{/style.css}" />
+  <link rel="stylesheet" href="/style.css" th:href="@{/style.css}" />
   <style>
     :root{
-      --brand:#f39c12;   /* orange du titre */
-      --accent:#1676f3;  /* bleu du bouton */
+      --brand:#f39c12;     /* orange bouton */
+      --accent:#1676f3;    /* bleu lien actif */
       --text:#1f2937;
+      --muted:#6b7280;
       --field-border:#e6e9ef;
-      --bg:#fafafa;
-    } 
-    *{ box-sizing:border-box }
-    body{ background: var(--bg); color: var(--text); font-family: Arial, Helvetica, sans-serif}
-    h1{ display:inline-block;   width:max-content;margin:0 0 16px auto; background:var(--brand); color:#fff; padding:10px 18px; border-radius:10px; }
-    
+      --bg:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+
+    /* ---- Nav ---- */
+    .navbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 24px;
+      border-bottom:1px solid #eef1f5;
+    }
+    .brand{
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .nav-links{
+      display:flex; gap:28px;
+    }
+    .nav-links a{
+      color:inherit; text-decoration:none; font-size:14px;
+    }
+    .nav-links a.active{ color:var(--accent); font-weight:700; }
+
+    /* ---- Page ---- */
+    .page{
+      min-height:calc(100vh - 58px);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .card{
+      width:560px; max-width:92vw;
+    }
+    .card label{
+      display:block; margin-bottom:8px; font-weight:600; font-size:14px;
+    }
+    .row{
+      display:flex; gap:10px;
+    }
+    input[type="email"]{
+      flex:1; min-width:0;
+      border:1px solid var(--field-border);
+      padding:12px 14px; border-radius:10px; outline:0;
+      font-size:14px; font-weight:600; background:#fff;
+    }
+    input::placeholder{ color:#9ca3af; font-weight:600; }
+    input:focus{ border-color:#bcd3ff; box-shadow:0 0 0 3px rgba(22,118,243,.12); }
+
+    button{
+      background:var(--brand); color:#fff; border:0;
+      border-radius:10px; padding:12px 18px;
+      font-weight:800; cursor:pointer;
+    }
+
     
 
-    input{
-      border: 1px solid var(--field border);
-      padding: 12px 14px; border-radius:10px; width:100%; max-width:320px;
-    }
-    
-  input::placeholder{color:#9ca3af; font-weight:700}
-    button{
-      background: var(--accent); color:#fff; border:0; border-radius:10px;
-      padding:12px 16px; font-weight: 700;cursor: pointer;
-    }
-  p a{color:var(--accent); text-decoration:none}
-  p a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
-<h1>Faire un virement</h1>
+
+  <header class="navbar">
+    <div class="brand">Pay My Buddy</div>
+    <nav class="nav-links">
+      <a th:href="@{/transactions/new}">Transférer</a>
+      <a th:href="@{/me}">Profil</a>
+      <a th:href="@{/buddies}">Ajouter relation</a>
+      <a th:href="@{/account}">Mon compte&solde</a>
+      <a th:href="@{/login?logout}">Se déconnecter</a>
+    </nav>
+  </header>
+
+<h1>Transfert</h1>
 
 <p th:if="${error}" th:text="${error}" style="color:red;"></p>
 <p th:if="${success}" th:text="${success}" style="color:green;"></p>
@@ -42,7 +99,6 @@
   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
   
   
-
   <label>Destinataire</label>
   <select th:field="*{receiverEmail}">
     <option value="" disabled selected>-- choisir --</option>
@@ -62,12 +118,11 @@
 
   <button type="submit">Envoyer</button>
 
-  <p th:if="${success}" th:text="${success}"></p>
-  <p th:if="${error}" th:text="${error}"></p>
+  
 </form>
 
+<hr/>
+<p><a th:href="@{/transactions/ListeTransactions}">historique des transferts</a></p>
 
-<p><a th:href="@{/transactions/ListeTransactions}">Voir l’historique</a></p>
-<p><a th:href="@{/landingPageUser}">espace personnel</a></p>
 </body>
 </html>

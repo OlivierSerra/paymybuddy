@@ -36,6 +36,9 @@ public class TransactionService {
         if (sender.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Insufficient balance");
         }
+        // if (senderEmail.equalsIgnoreCase(receiverEmail)) {
+        // throw new IllegalArgumentException("interdit.");
+        // }
 
         sender.setBalance(sender.getBalance().subtract(amount));
         receiver.setBalance(receiver.getBalance().add(amount));
