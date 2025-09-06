@@ -44,7 +44,7 @@ public class OnBoardingViewController {
         }
         userService.completeOnboarding(principal.getName(), form);
         ra.addFlashAttribute("info", "Bienvenue ! Votre profil est prêt.");
-        return "redirect:/landingPageUser";
+        return "redirect:/buddies";
     }
 
     @GetMapping({ "/me", "/me/" })
