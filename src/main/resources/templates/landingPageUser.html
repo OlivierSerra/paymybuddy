@@ -79,10 +79,19 @@
   <header class="navbar">
     <div class="brand">Pay My Buddy</div>
     <nav class="nav-links">
-      <a th:href="@{/transactions/new}">Transférer</a>
-      <a th:href="@{/me}">Profil</a>
-      <a th:href="@{/buddies}">Ajouter relation</a>
-      <a th:href="@{/account}">Mon compte&solde</a>
+      <a th:href="@{/transactions/new}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/transactions')}
+                   ? 'active'">Transférer</a>
+      <a th:href="@{/me}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/me')} ? 'active'">Profil</a>
+      <a th:href="@{/buddies}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/buddies')} ? 'active'">Ajouter relation</a>
+      <a th:href="@{/account}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/account')} ? 'active'">Mon compte&solde</a>
       <a th:href="@{/login?logout}">Se déconnecter</a>
     </nav>
   </header>

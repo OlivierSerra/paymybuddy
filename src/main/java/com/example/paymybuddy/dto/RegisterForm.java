@@ -17,6 +17,9 @@ public class RegisterForm {
     @NotBlank
     private String password;
 
+    @NotBlank
+    private String username;
+
     // getters et setters pour accéder aux variables
 
     public String getEmail() {
@@ -33,6 +36,14 @@ public class RegisterForm {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }

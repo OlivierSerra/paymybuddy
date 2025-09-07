@@ -8,8 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
+import com.example.paymybuddy.dto.OnboardingForm;
 
 import java.security.Principal;
+import java.util.NoSuchElementException;
 
 @Controller
 // @RequestMapping("/users")
@@ -23,28 +25,37 @@ public class OnBoardingViewController {
 
     @GetMapping("/onboarding")
     public String onboarding(Model model, Principal principal) {
-        User me = userService.getRequiredByEmail(principal.getName());
-
-        if (Boolean.TRUE.equals(me.getOnboardingCompleted())) {
-            return "redirect:/me";
-        }
-        model.addAttribute("user", me);
-        return "onboarding"; // ton template
+        User u = userService.findByEmail(principal.getName())
+                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable: " + principal.getName()));
+        OnboardingForm form = new OnboardingForm();
+        form.setUsername(u.getUsername());
+        form.setEmail(u.getEmail());
+        form.setBankAccount(u.getBankAccount());
+        model.addAttribute("onboardingForm", form);
+        return "onboarding";
     }
 
     @PostMapping("/onboarding")
-    public String completeOnboarding(@Valid @ModelAttribute("user") User form,
+    public String completeOnboarding(
+            @Valid @ModelAttribute("onboardingForm") OnboardingForm form,
             BindingResult binding,
             Principal principal,
-            Model model,
             RedirectAttributes ra) {
+
         if (binding.hasErrors()) {
-            // réaffiche le formulaire avec erreurs
-            return "onboarding";
+            return "onboarding"; // réaffiche avec erreurs (200)
         }
-        userService.completeOnboarding(principal.getName(), form);
-        ra.addFlashAttribute("info", "Bienvenue ! Votre profil est prêt.");
-        return "redirect:/buddies";
+
+        User u = userService.findByEmail(principal.getName())
+                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable: " + principal.getName()));
+        u.setUsername(form.getUsername());
+        u.setEmail(form.getEmail());
+        u.setBankAccount(form.getBankAccount());
+        u.setOnboardingCompleted(true);
+        userService.createUser(u);
+
+        ra.addFlashAttribute("success", "Profil complété !");
+        return "redirect:/me"; // IMPORTANT: redirection après succès
     }
 
     @GetMapping({ "/me", "/me/" })

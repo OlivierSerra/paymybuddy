@@ -132,6 +132,13 @@
   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
   <div>
+    <label>username :</label>
+    <input type="text" th:field="*{username}" required />
+    <div th:errors="*{username}" style="color:#b91c1c; font-size:.9em;">
+    </div>
+  </div>
+
+  <div>
     <label>Email :</label>
     <input type="email" th:field="*{email}" required />
     <div th:errors="*{email}" style="color:#b91c1c; font-size:.9em;">

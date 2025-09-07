@@ -105,10 +105,19 @@
     <header class="navbar">
     <div class="brand">Pay My Buddy</div>
     <nav class="nav-links">
-      <a th:href="@{/transactions/new}">Transférer</a>
-      <a th:href="@{/me}">Profil</a>
-      <a th:href="@{/buddies}">Ajouter relation</a>
-      <a th:href="@{/account}">Mon compte&solde</a>
+      <a th:href="@{/transactions/new}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/transactions')}
+                   ? 'active'">Transférer</a>
+      <a th:href="@{/me}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/me')} ? 'active'">Profil</a>
+      <a th:href="@{/buddies}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/buddies')} ? 'active'">Ajouter relation</a>
+      <a th:href="@{/account}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/account')} ? 'active'">Mon compte&solde</a>
       <a th:href="@{/login?logout}">Se déconnecter</a>
     </nav>
   </header>
@@ -130,20 +139,16 @@
             <span class="tx-value" style="color:#16a34a" th:text="${#temporals.format(t.timestamp, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</span>
           </div>
           <div class="tx-row">
-            <span class="tx-label">Émetteur</span>
-            <span class="tx-value" th:text="${t.userSender.username}">alice</span>
+            <span class="tx-label">Relations</span>
+            <span class="tx-value" th:text="${t.userReceiver.username}">bob</span>
           </div>
           <div class="tx-row">
-            <span class="tx-label">Bénéficiaire</span>
-            <span class="tx-value" th:text="${t.userReceiver.username}">bob</span>
+            <span class="tx-label">Description</span>
+            <span class="tx-value" th:text="${t.description}">déj</span>
           </div>
           <div class="tx-row">
             <span class="tx-label">Montant</span>
             <span class="tx-value" th:text="${t.amount}">10.00</span>
-          </div>
-          <div class="tx-row">
-            <span class="tx-label">Libellé</span>
-            <span class="tx-value" th:text="${t.description}">déj</span>
           </div>
         </div>
       </div>

@@ -56,6 +56,7 @@ public class RegisterController {
             return "register";
         }
         User u = new User();
+        u.setUsername(form.getUsername());
         u.setEmail(form.getEmail());
         u.setPassword(form.getPassword());
         u.setOnboardingCompleted(false);

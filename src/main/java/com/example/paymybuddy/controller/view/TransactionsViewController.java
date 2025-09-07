@@ -43,41 +43,48 @@ public class TransactionsViewController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/new")
-    public String newTransaction(Model model, Principal principal) {
-        // model.addAttribute("transaction", new TransactionRequest());
-        if (!model.containsAttribute("transaction")) {
-            model.addAttribute("transaction", new TransactionRequest());
-        }
+    @ModelAttribute("users")
+    public List<User> usersForSelect(Principal principal) {
         String me = principal.getName();
-        List<User> users = userRepository.findAll().stream()
+        return userRepository.findAll().stream()
                 .filter(u -> !u.getEmail().equalsIgnoreCase(me))
                 .toList();
-        model.addAttribute("users", userRepository.findAll());
-        return "transaction";
     }
 
-    @GetMapping("/ListeTransactions")
-    public String listTransaction(Model model, Principal principal) {
-        String username = principal.getName();
-        User user = userRepository.findByEmail(username)
+    @ModelAttribute("me")
+    public String me(Principal principal) {
+        return principal.getName();
+    }
+
+    @ModelAttribute("transactions")
+    public List<Transaction> myTransactions(Principal principal) {
+        User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Récupère envoyées + reçues, fusionne, déduplique par id, trie par timestamp
-        // DESC
-        List<Transaction> myTransactions = Stream
-                .concat(
-                        transactionRepository.findByUserSender(user).stream(),
-                        transactionRepository.findByUserReceiver(user).stream())
+        return Stream.concat(
+                transactionRepository.findByUserSender(user).stream(),
+                transactionRepository.findByUserReceiver(user).stream())
                 .collect(LinkedHashMap<Integer, Transaction>::new, // garantit l'ordre d'insertion
                         (map, tx) -> map.put(tx.getId(), tx), // dédup par id
                         LinkedHashMap::putAll)
                 .values().stream()
                 .sorted(Comparator.comparing(Transaction::getTimestamp).reversed())
                 .toList();
+    }
 
-        model.addAttribute("transactions", myTransactions);
-        return "ListeTransactions"; // templates/ListeTransactions.html
+    @GetMapping("/new")
+    public String newTransaction(Model model, Principal principal) {
+        if (!model.containsAttribute("transaction")) {
+            model.addAttribute("transaction", new TransactionRequest());
+            String me = principal.getName();
+        }
+
+        return "transaction";
+    }
+
+    @GetMapping("/ListeTransactions")
+    public String listTransaction() {
+        return "transaction";
     }
 
     @PostMapping
@@ -85,15 +92,9 @@ public class TransactionsViewController {
             BindingResult br,
             RedirectAttributes ra,
             Principal principal) {
+
         if (br.hasErrors()) {
             ra.addFlashAttribute("org.springframework.validation.BindingResult.transaction", br);
-            ra.addFlashAttribute("transaction", form);
-            return "redirect:/transactions/new";
-        }
-
-        String sender = principal.getName();
-        if (sender.equalsIgnoreCase(form.getReceiverEmail())) {
-            ra.addFlashAttribute("error", "Vous ne pouvez pas vous faire un virement.");
             ra.addFlashAttribute("transaction", form);
             return "redirect:/transactions/new";
         }
@@ -105,7 +106,7 @@ public class TransactionsViewController {
                     form.getAmount(),
                     form.getDescription());
             ra.addFlashAttribute("success", "Virement effectué !");
-            return "redirect:/transactions/ListeTransactions"; // <-- slash corrigé
+            return "redirect:/transactions/new"; // <-- slash corrigé
         } catch (RuntimeException ex) {
             ra.addFlashAttribute("error", ex.getMessage());
             ra.addFlashAttribute("transaction", form);

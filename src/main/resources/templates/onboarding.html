@@ -99,10 +99,19 @@
   <header class="navbar">
     <div class="brand">Pay My Buddy</div>
     <nav class="nav-links">
-      <a th:href="@{/transactions/new}">Transférer</a>
-      <a th:href="@{/me}">Profil</a>
-      <a th:href="@{/buddies}">Ajouter relation</a>
-      <a th:href="@{/account}">Mon compte&solde</a>
+      <a th:href="@{/transactions/new}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/transactions')}
+                   ? 'active'">Transférer</a>
+      <a th:href="@{/me}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/me')} ? 'active'">Profil</a>
+      <a th:href="@{/buddies}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/buddies')} ? 'active'">Ajouter relation</a>
+      <a th:href="@{/account}"
+      th:classappend="${#httpServletRequest != null
+                    and #strings.startsWith(#httpServletRequest.requestURI,'/account')} ? 'active'">Mon compte&solde</a>
       <a th:href="@{/login?logout}">Se déconnecter</a>
     </nav>
   </header>
@@ -116,25 +125,25 @@
 
 <p>Pour commencer, merci de compléter vos informations.</p>
 
-<form th:action="@{/onboarding}" th:object="${user}" method="post">
+<form th:action="@{/onboarding}" th:object="${onboardingForm}" method="post" novalidate>
   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-
   <div>
-    <label>nom d'utilisateur :</label>
+    <label>Nom d'utilisateur :</label>
     <input type="text" th:field="*{username}" required />
+    <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color:#c00"></div>
   </div>
 
   <div>
     <label>Email :</label>
     <input type="email" th:field="*{email}" required />
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:#c00"></div>
   </div>
 
-  <!-- Ajoute ici les champs “obligatoires” de ton onboarding -->
-  
   <div>
     <label>Bank Account :</label>
-    <input type="text" th:field="*{bankAccount}" required />
+    <input type="number" th:field="*{bankAccount}" required />
+    <div th:if="${#fields.hasErrors('bankAccount')}" th:errors="*{bankAccount}" style="color:#c00"></div>
   </div>
 
   <div style="margin-top:1rem;">
