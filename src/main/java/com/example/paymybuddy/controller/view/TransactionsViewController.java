@@ -2,34 +2,27 @@ package com.example.paymybuddy.controller.view;
 
 // ...
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.security.Principal;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.example.paymybuddy.dto.TransactionRequest;
 import com.example.paymybuddy.model.Transaction;
+import com.example.paymybuddy.model.TransactionRequest;
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.repository.TransactionRepository;
 import com.example.paymybuddy.repository.UserRepository;
 import com.example.paymybuddy.service.TransactionService;
 
-// ...
-
 @Controller
 @RequestMapping("/transactions")
 public class TransactionsViewController {
-    // ... ctor identique
 
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;
@@ -60,7 +53,6 @@ public class TransactionsViewController {
     public List<Transaction> myTransactions(Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         return Stream.concat(
                 transactionRepository.findByUserSender(user).stream(),
                 transactionRepository.findByUserReceiver(user).stream())
@@ -106,7 +98,7 @@ public class TransactionsViewController {
                     form.getAmount(),
                     form.getDescription());
             ra.addFlashAttribute("success", "Virement effectué !");
-            return "redirect:/transactions/new"; // <-- slash corrigé
+            return "redirect:/transactions/new";
         } catch (RuntimeException ex) {
             ra.addFlashAttribute("error", ex.getMessage());
             ra.addFlashAttribute("transaction", form);

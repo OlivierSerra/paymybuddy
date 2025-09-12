@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
 import com.example.paymybuddy.dto.OnboardingForm;
-
 import java.security.Principal;
 import java.util.NoSuchElementException;
 
 @Controller
-// @RequestMapping("/users")
 public class OnBoardingViewController {
 
     private final UserService userService;
@@ -43,7 +41,7 @@ public class OnBoardingViewController {
             RedirectAttributes ra) {
 
         if (binding.hasErrors()) {
-            return "onboarding"; // réaffiche avec erreurs (200)
+            return "onboarding";
         }
 
         User u = userService.findByEmail(principal.getName())
@@ -55,7 +53,7 @@ public class OnBoardingViewController {
         userService.createUser(u);
 
         ra.addFlashAttribute("success", "Profil complété !");
-        return "redirect:/me"; // IMPORTANT: redirection après succès
+        return "redirect:/me";
     }
 
     @GetMapping({ "/me", "/me/" })

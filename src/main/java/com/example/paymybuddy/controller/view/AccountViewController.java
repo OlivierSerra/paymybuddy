@@ -1,4 +1,4 @@
-package com.example.paymybuddy.controller;
+package com.example.paymybuddy.controller.view;
 
 import java.lang.ProcessBuilder.Redirect;
 import java.math.BigDecimal;

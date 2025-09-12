@@ -1,4 +1,4 @@
-package com.example.paymybuddy.dto;
+package com.example.paymybuddy.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

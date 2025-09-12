@@ -42,7 +42,6 @@ public class BuddiesViewController {
                                 .filter(u -> !buddyIds.contains(u.getId())) // exclure déjà buddies
                                 .collect(Collectors.toList());
 
-                // Pour ne pas toucher à ton template existant
                 model.addAttribute("owner", me);
                 model.addAttribute("buddies", buddies);
                 model.addAttribute("candidates", candidates);

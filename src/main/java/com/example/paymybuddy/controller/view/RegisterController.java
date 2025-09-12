@@ -1,4 +1,3 @@
-
 package com.example.paymybuddy.controller.view;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,11 +9,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.example.paymybuddy.dto.RegisterForm;
 import com.example.paymybuddy.model.User;
 import com.example.paymybuddy.service.UserService;
-
 import jakarta.validation.Valid;
 
 @Controller
@@ -34,15 +31,6 @@ public class RegisterController {
         model.addAttribute("registerForm", new RegisterForm());
         return "register";
     }
-    /*
-     * @GetMapping
-     * public String Form(Model model) {
-     * if (!model.containsAttribute("form")) {
-     * model.addAttribute("form", new RegisterForm());
-     * }
-     * return "register";
-     * }
-     */
 
     @PostMapping
     public String submit(@Valid @ModelAttribute("registerForm") RegisterForm form,

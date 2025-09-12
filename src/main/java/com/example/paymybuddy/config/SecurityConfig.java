@@ -1,9 +1,6 @@
 package com.example.paymybuddy.config;
 
-import com.example.paymybuddy.controller.view.OnBoardingViewController;
 import com.example.paymybuddy.repository.UserRepository;
-
-//import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,8 +21,6 @@ public class SecurityConfig {
                 return new BCryptPasswordEncoder();
         }
 
-        // indication dans la trace que "No authentificationProviders ... returning null
-        // donc création d'un DaoAuthenticationProvider"
         @Bean
         public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
                         PasswordEncoder encoder) {
@@ -39,15 +34,12 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider authenticationProvider)
                         throws Exception {
                 http
-                                // .csrf(csrf -> csrf.disable()) // pour tes formulaires actuels sans token CSRF
                                 .authenticationProvider(authenticationProvider)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/login", "/register", "/favicon.ico",
                                                                 "/style.css", "/css/**", "/js/**", "/images/**",
                                                                 "/webjars/**")
                                                 .permitAll()
-                                                .requestMatchers("/ListeUsers").hasRole("ADMIN")
-                                                .requestMatchers("/ListeTransactions").hasRole("USER")
                                                 .requestMatchers("/landingPageUser/**", "/users/**", "/buddies/**",
                                                                 "/transactions/**")
                                                 .authenticated()
@@ -73,8 +65,8 @@ public class SecurityConfig {
                 return loginEmail -> userRepository.findByEmail(loginEmail)
                                 .map(u -> org.springframework.security.core.userdetails.User
                                                 .withUsername(u.getEmail())
-                                                .password(u.getPassword()) // doit être BCrypt !
-                                                .roles(u.getRole()) // ex: "USER" ou "ADMIN" (sans le prefix "ROLE_")
+                                                .password(u.getPassword())
+                                                .roles(u.getRole())
                                                 .build())
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + loginEmail));
         }
